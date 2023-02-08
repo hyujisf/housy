@@ -15,6 +15,6 @@ type PropertyRequest struct {
 	Bathroom    int            `json:"bathroom" form:"bathroom" validate:"required"`
 	Description string         `json:"description" form:"description" validate:"required"`
 	Size        int            `json:"size" form:"size" validate:"required"`
-	District string `json:"district" form:"district" validate:"required"`
-	Image       string         `json:"image" form:"image" validate:"required"`
+	District    string         `json:"district" form:"district" validate:"required"`
+	Image       string         `json:"image" form:"image"`
 }
