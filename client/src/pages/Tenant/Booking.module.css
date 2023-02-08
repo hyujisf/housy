@@ -1,0 +1,69 @@
+.MaxWidth {
+	padding-top: 5.75rem;
+	padding-left: 12px;
+	padding-right: 12px;
+	margin-right: auto;
+	margin-left: auto;
+	max-width: 1280px;
+	min-height: 100vh;
+}
+
+.Card {
+	margin-top: 5.5rem;
+	border-radius: 1rem;
+	background-color: white;
+	padding: 3rem;
+	box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+.CardRight {
+	text-align: center;
+
+	width: 18rem;
+}
+
+.ImgLogo {
+	margin-bottom: 2rem;
+}
+
+.WrapperCardImage {
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 0.75rem;
+	border-radius: 0.5rem;
+	width: 8rem;
+	height: 8rem;
+	overflow: hidden;
+}
+
+.CardImage {
+	height: 100%;
+	width: 100%;
+	object-fit: cover;
+	object-position: center;
+}
+
+.ListTitle {
+	display: block;
+	color: black;
+	margin: 0;
+}
+.ListTitleTrigger {
+	display: block;
+	color: #570ece;
+	margin: 0;
+	cursor: pointer;
+	transition: all 200ms ease-in-out;
+}
+.ListTitleTrigger:hover {
+	display: block;
+	color: #b80ece;
+	margin: 0;
+}
+
+.Badge {
+	background-color: #f8ecec;
+	color: #ec7a7a;
+	border-radius: 0.5rem;
+	padding: 0.3rem 1.25rem;
+}

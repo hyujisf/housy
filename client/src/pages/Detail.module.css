@@ -1,0 +1,87 @@
+.MaxWidth {
+  padding-top: 2rem;
+  padding-left: 12px;
+  padding-right: 12px;
+  margin-right: auto;
+  margin-left: auto;
+  max-width: 1440px;
+}
+
+.WrapperPrimaryImage {
+  margin-top: 20px;
+  height: 475px;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.WrapperSubImage {
+  position: relative;
+  height: 225px;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  
+}
+.PrimaryImage {
+  object-position: center;
+  object-fit: cover;
+  height: 100%;
+  width: 100%;
+}
+
+.ImageMore {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 24px;
+  background-color: rgba(133, 133, 133, 0.5);
+  /* filter: blur(.5); */
+  /* opacity: .5; */
+  backdrop-filter: opacity(0.5);
+}
+
+.BookingTitle {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 0;
+}
+
+.BookingDesc {
+  width: 100%;
+  display: flex;
+  flex-direction: column ;
+  justify-content: space-between;
+}
+.WrappingBookingDesc {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+@media (min-width:1440px) {
+  .BookingDesc {
+  flex-direction: row;
+  } 
+}
+
+.Modal{
+  /* height: 70vh; */
+  overflow: hidden;
+}
+
+.Form {
+  padding: 1.25rem;
+  height: 40vh;
+  overflow: auto;
+  overflow: -moz-scrollbars-none;
+  -ms-overflow-style: none; 
+}
+.Form::-webkit-scrollbar { width: 0 !important }

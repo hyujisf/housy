@@ -1,0 +1,51 @@
+.MaxWidth {
+	padding-top: 8rem;
+	padding-bottom: 5rem;
+	margin: 0 auto;
+	width: 100%;
+	min-height: 100vh;
+	max-width: 1440px;
+}
+
+.Card {
+	margin-left: 2rem;
+	margin-right: 2rem;
+	padding: 4rem;
+	border-radius: 2rem;
+	background-color: white;
+}
+
+@media (min-width: 1440px) {
+	.MaxWidth {
+		padding-top: 12rem;
+		padding-bottom: 5rem;
+	}
+	
+}
+
+
+.TableData {
+	padding: 2rem auto !important;
+}
+
+.TextSuccess {
+	color: #0acf83;
+}
+.TextDanger {
+	color: #ff0742;
+}
+.TextWarning {
+	color: #f7941e;
+}
+
+.IconButton {
+	cursor: pointer;
+	color: #6610f2;
+	font-size: 2rem;
+	transition: all 200ms ease-in-out;
+}
+
+.IconButton:hover {
+	color: #00ffc3;
+	font-size: 2rem;
+}

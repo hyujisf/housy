@@ -1,0 +1,64 @@
+.MaxWidth {
+  padding-top: 5.75rem;
+  padding-left: 12px;
+  padding-right: 12px;
+  margin-right: auto;
+  margin-left: auto;
+  max-width: 1100px;
+  min-height: 100vh;
+}
+
+.Card {
+  margin-top: 5.5rem;
+  border-radius: 1rem;
+  background-color: white;
+  padding: 3rem;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+.CardLeft {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  color:#8a8c90
+}
+
+.CardRight {
+
+  width: 21rem;
+}
+
+.WrapperCardImage {
+  margin-bottom: .75rem;
+  border-radius: .5rem;
+  width: 21rem;
+  height: 26rem;
+overflow: hidden;
+}
+
+.CardImage {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  object-position: center;
+
+}
+
+.ListTitle {
+  display: block;
+  color: black;
+  margin: 0;
+}
+.ListTitleTrigger {
+  display: block;
+  color: #570ece;
+  margin: 0;
+  cursor: pointer;
+  transition: all 200ms ease-in-out;
+}
+.ListTitleTrigger:hover {
+  display: block;
+  color: #b80ece;
+  margin: 0;
+}

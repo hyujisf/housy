@@ -1,0 +1,101 @@
+.MaxWidth {
+	width: 100%;
+	padding-right: calc(var(--bs-gutter-x) * 0.5);
+	padding-left: calc(var(--bs-gutter-x) * 0.5);
+	margin-right: auto;
+	margin-left: auto;
+	max-width: 1920px !important;
+	display: flex;
+	flex-wrap: inherit;
+	align-items: center;
+	justify-content: space-between;
+}
+.NavbarBrand {
+	padding-left: 2rem;
+	margin-right: auto;
+}
+@media (min-width: 1400px) {
+	.NavbarBrand {
+		margin-right: 25rem;
+		padding-left: 3rem;
+	}
+}
+
+.InputGroup {
+	width: 100%;
+	margin-top: 20px;
+	padding: auto 3rem;
+}
+
+@media (min-width: 1400px) {
+	.InputGroup {
+		width: 28rem;
+		margin-top: auto;
+	}
+}
+
+.DropMenu {
+	display: inline-flex;
+	gap: 1rem;
+}
+.DropdownMenu {
+	margin-top: 0.7rem !important;
+}
+
+@media (min-width: 1400px) {
+	.DropdownMenu::before {
+		position: absolute;
+		top: -13px;
+		right: 12px;
+		display: inline-block;
+		border-right: 13px solid transparent;
+		border-bottom: 13px solid #ccc;
+		border-left: 13px solid transparent;
+		border-bottom-color: rgba(0, 0, 0, 0.2);
+		content: "";
+	}
+	.DropdownMenu::after {
+		position: absolute;
+		top: -11.5px;
+		right: 13px;
+		display: inline-block;
+		border-right: 12.3px solid transparent;
+		border-bottom: 12.3px solid white;
+		border-left: 12.3px solid transparent;
+		content: "";
+	}
+}
+
+.Dropdown {
+	text-align: right;
+}
+.Toggle {
+	border: 4px solid #cecece !important;
+	height: 56px;
+	width: 56px;
+	border-radius: 99rem;
+	overflow: hidden;
+	padding: 0 !important;
+	margin: 2rem auto 0.5rem !important;
+}
+@media (min-width: 1400px) {
+	.Toggle {
+		border: 4px solid #cecece !important;
+		height: 56px;
+		border-radius: 99rem;
+		overflow: hidden;
+		padding: 0 !important;
+		margin: 0 !important;
+	}
+}
+.ToggleImage {
+	object-position: center;
+	object-fit: cover;
+	height: 100%;
+	width: 100%;
+	margin: 0 !important;
+}
+.Toggle::after {
+	display: none;
+}
+

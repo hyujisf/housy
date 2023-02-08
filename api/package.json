@@ -1,0 +1,6 @@
+{
+	"name": "housy",
+	"scripts": {
+		"start": "nodemon --exec go run main.go"
+	}
+}
