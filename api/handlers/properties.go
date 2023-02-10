@@ -96,7 +96,7 @@ func (h *handlerProperty) AddProperty(w http.ResponseWriter, r *http.Request) {
 
 	// Get dataFile from midleware and store to filename variable here ...
 	dataContex := r.Context().Value("dataFile") // add this code
-	filename := dataContex.(string)             // add this code
+	filepath := dataContex.(string)             // add this code
 
 	city_id, _ := strconv.Atoi(r.FormValue("city_id"))
 	price, _ := strconv.Atoi(r.FormValue("price"))
@@ -116,7 +116,7 @@ func (h *handlerProperty) AddProperty(w http.ResponseWriter, r *http.Request) {
 		Description: r.FormValue("description"),
 		Size:        size,
 		District:    r.FormValue("district"),
-		Image:       filename,
+		Image:       filepath,
 	}
 
 	validation := validator.New()
@@ -126,6 +126,20 @@ func (h *handlerProperty) AddProperty(w http.ResponseWriter, r *http.Request) {
 		response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()}
 		json.NewEncoder(w).Encode(response)
 		return
+	}
+
+	var ctx = context.Background()
+	var CLOUD_NAME = os.Getenv("CLOUD_NAME")
+	var API_KEY = os.Getenv("API_KEY")
+	var API_SECRET = os.Getenv("API_SECRET")
+
+	cld, _ := cloudinary.NewFromParams(CLOUD_NAME, API_KEY, API_SECRET)
+
+	// Upload file to Cloudinary ...
+	resp, err := cld.Upload.Upload(ctx, filepath, uploader.UploadParams{Folder: "housy"})
+
+	if err != nil {
+		fmt.Println(err.Error())
 	}
 
 	property := models.Property{
@@ -140,22 +154,8 @@ func (h *handlerProperty) AddProperty(w http.ResponseWriter, r *http.Request) {
 		Description: request.Description,
 		Size:        request.Size,
 		District:    request.District,
-		Image:       request.Image,
+		Image:       resp.SecureURL,
 		UserID:      userId,
-	}
-
-	var ctx = context.Background()
-	var CLOUD_NAME = os.Getenv("CLOUD_NAME")
-	var API_KEY = os.Getenv("API_KEY")
-	var API_SECRET = os.Getenv("API_SECRET")
-
-	cld, _ := cloudinary.NewFromParams(CLOUD_NAME, API_KEY, API_SECRET)
-
-	// Upload file to Cloudinary ...
-	resp, err := cld.Upload.Upload(ctx, filename, uploader.UploadParams{Folder: "housy"})
-
-	if err != nil {
-		fmt.Println(err.Error())
 	}
 
 	data, err := h.PropertyRepository.AddProperty(property)
