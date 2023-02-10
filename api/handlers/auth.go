@@ -69,7 +69,7 @@ func (h *handlerAuth) Register(w http.ResponseWriter, r *http.Request) {
 		Gender:   request.Gender,
 		Phone:    request.Phone,
 		Address:  request.Address,
-		Image:    "https://api.dicebear.com/5.x/shapes/svg?seed=" + request.Username,
+		Image:    "https://api.dicebear.com/5.x/shapes/svg?seed=" + request.Email,
 	}
 
 	data, err := h.AuthRepository.Register(user)
