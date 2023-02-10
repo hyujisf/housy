@@ -1,15 +1,15 @@
 package middleware
 
-// Import required packages here ...
 import (
 	"context"
 	"encoding/json"
 	"fmt"
+	dto "housy/dto/result"
+	"io"
 	"io/ioutil"
 	"net/http"
 )
 
-// Create UploadFile function here ...
 func UploadFile(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Upload file
@@ -18,22 +18,52 @@ func UploadFile(next http.HandlerFunc) http.HandlerFunc {
 		// the Header and the size of the file
 		file, _, err := r.FormFile("image")
 
+		if err != nil && r.Method == "PATCH" {
+			ctx := context.WithValue(r.Context(), "dataFile", "false")
+			next.ServeHTTP(w, r.WithContext(ctx))
+			return
+		}
+
 		if err != nil {
-			fmt.Println(err)
-			json.NewEncoder(w).Encode("Error Retrieving the File")
+			w.WriteHeader(http.StatusBadRequest)
+			response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
+			json.NewEncoder(w).Encode(response)
 			return
 		}
 		defer file.Close()
-		// fmt.Printf("Uploaded File: %+v\n", handler.Filename)
-		// fmt.Printf("File Size: %+v\n", handler.Size)
-		// fmt.Printf("MIME Header: %+v\n", handler.Header)
-		const MAX_UPLOAD_SIZE = 10 << 20 // 10MB
-		// Parse our multipart form, 10 << 20 specifies a maximum
-		// upload of 10 MB files.
+
+		// setup file type filtering
+		buff := make([]byte, 512)
+		_, err = file.Read(buff)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()}
+			json.NewEncoder(w).Encode(response)
+			return
+		}
+
+		filetype := http.DetectContentType(buff)
+		if filetype != "image/jpeg" && filetype != "image/png" {
+			w.WriteHeader(http.StatusBadRequest)
+			response := dto.ErrorResult{Code: http.StatusBadRequest, Message: "The provided file format is not allowed. Please upload a JPEG or PNG image"}
+			json.NewEncoder(w).Encode(response)
+			return
+		}
+
+		_, err = file.Seek(0, io.SeekStart)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()}
+			json.NewEncoder(w).Encode(response)
+			return
+		}
+
+		// setup max-upload
+		const MAX_UPLOAD_SIZE = 10 << 20
 		r.ParseMultipartForm(MAX_UPLOAD_SIZE)
 		if r.ContentLength > MAX_UPLOAD_SIZE {
 			w.WriteHeader(http.StatusBadRequest)
-			response := Result{Code: http.StatusBadRequest, Message: "Max sizes are 10MB"}
+			response := Result{Code: http.StatusBadRequest, Message: "Max size in 1mb"}
 			json.NewEncoder(w).Encode(response)
 			return
 		}
@@ -60,9 +90,10 @@ func UploadFile(next http.HandlerFunc) http.HandlerFunc {
 		tempFile.Write(fileBytes)
 
 		data := tempFile.Name()
-		// filename := data[8:] // split uploads/
+		// Delete 1 line split uploads/ code ...
+		// filename := data[8:]
 
-		// add filename to ctx
+		// add data variable to ctx (on parameter 3) ...
 		ctx := context.WithValue(r.Context(), "dataFile", data)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
