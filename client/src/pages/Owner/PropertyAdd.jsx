@@ -87,7 +87,7 @@ export default function AddProperty() {
 				title: "Property baru telah berhasil ditambahkan",
 			});
 
-			e.target.reset();
+			// e.target.reset();
 		} catch (err) {
 			// console.log(err);
 
