@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import { Modal, Button, Form } from "react-bootstrap";
@@ -7,6 +7,7 @@ import css from "./index.module.css";
 
 const OrderModal = (props) => {
 	// const { id } = useParams();
+	const [booking, setBooking] = useState((checkin = ""), (checkout = ""));
 
 	const redirect = useNavigate();
 	const data = JSON.parse(localStorage.getItem("isLogin"));
@@ -60,7 +61,7 @@ const OrderModal = (props) => {
 						/>
 					</Form.Group>
 					<Form.Group className='mb-3'>
-						<Form.Label htmlFor='checkout' className='fw-bold fs-4'>
+						<Form.Label htmlFor='checkout' className='fw-bold fs-4' disabled>
 							Check-out
 						</Form.Label>
 						<Form.Control
@@ -71,6 +72,7 @@ const OrderModal = (props) => {
 							placeholder='Checkout'
 							className='bg-tertiary'
 							name='checkout'
+							value={checkoutFormat}
 						/>
 					</Form.Group>
 

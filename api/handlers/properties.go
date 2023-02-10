@@ -2,15 +2,21 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	propertiesdto "housy/dto/properties"
 	dto "housy/dto/result"
 	"housy/models"
 	"housy/repositories"
 	"net/http"
+	"os"
 	"strconv"
 
 	// "os"
 
+	"context"
+
+	"github.com/cloudinary/cloudinary-go/v2"
+	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/gorilla/mux"
@@ -138,6 +144,20 @@ func (h *handlerProperty) AddProperty(w http.ResponseWriter, r *http.Request) {
 		UserID:      userId,
 	}
 
+	var ctx = context.Background()
+	var CLOUD_NAME = os.Getenv("CLOUD_NAME")
+	var API_KEY = os.Getenv("API_KEY")
+	var API_SECRET = os.Getenv("API_SECRET")
+
+	cld, _ := cloudinary.NewFromParams(CLOUD_NAME, API_KEY, API_SECRET)
+
+	// Upload file to Cloudinary ...
+	resp, err := cld.Upload.Upload(ctx, filename, uploader.UploadParams{Folder: "dumbmerch"})
+
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
 	data, err := h.PropertyRepository.AddProperty(property)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -160,7 +180,7 @@ func (h *handlerProperty) AddProperty(w http.ResponseWriter, r *http.Request) {
 		Description: property.Description,
 		Size:        property.Size,
 		District:    property.District,
-		Image:       property.Image,
+		Image:       resp.SecureURL,
 		UserID:      property.UserID,
 	}
 
