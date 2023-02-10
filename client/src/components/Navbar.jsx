@@ -88,10 +88,17 @@ export default function Header(props) {
 							{state.isLogin === true ? (
 								<Dropdown className={css.Dropdown}>
 									<Dropdown.Toggle className={css.Toggle}>
-										<Image
-											className={css.ToggleImage}
-											src={"http://localhost:5000/uploads/" + state.user.image}
-										/>
+										{state.user.image !== "" ? (
+											<Image
+												className={css.ToggleImage}
+												src={state.user.image}
+											/>
+										) : (
+											<Image
+												src='https://api.dicebear.com/5.x/shapes/svg'
+												alt='avatar'
+											/>
+										)}
 									</Dropdown.Toggle>
 
 									<Dropdown.Menu align='end' className={css.DropdownMenu}>
