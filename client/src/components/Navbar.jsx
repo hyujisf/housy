@@ -92,11 +92,13 @@ export default function Header(props) {
 											<Image
 												className={css.ToggleImage}
 												src={state.user.image}
+												alt={state.user.username + " Housy Profile Image"}
 											/>
 										) : (
 											<Image
+												className={css.ToggleImage}
 												src='https://api.dicebear.com/5.x/shapes/svg'
-												alt='avatar'
+												alt='Housy Profile Image'
 											/>
 										)}
 									</Dropdown.Toggle>

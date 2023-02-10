@@ -164,10 +164,19 @@ export default function Profile() {
 							</div>
 							<div className={css.CardRight}>
 								<div className={css.WrapperCardImage}>
-									<Image
-										className={css.CardImage}
-										src={"http://localhost:5000/uploads/" + user?.image}
-									/>
+									{state.user.image !== "" ? (
+										<Image
+											className={css.CardImage}
+											src={state.user.image}
+											alt={state.user.username + " Housy Profile Image"}
+										/>
+									) : (
+										<Image
+											className={css.CardImage}
+											src='https://api.dicebear.com/5.x/shapes/svg'
+											alt='Housy Profile Image'
+										/>
+									)}
 									{/* <Link to='/'>back to home</Link> */}
 								</div>
 								<Button
