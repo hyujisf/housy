@@ -1,5 +1,6 @@
 package middleware
 
+// Import required packages here ...
 import (
 	"context"
 	"encoding/json"
@@ -10,6 +11,7 @@ import (
 	"net/http"
 )
 
+// Create UploadFile function here ...
 func UploadFile(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Upload file
@@ -32,7 +34,6 @@ func UploadFile(next http.HandlerFunc) http.HandlerFunc {
 		}
 		defer file.Close()
 
-		// setup file type filtering
 		buff := make([]byte, 512)
 		_, err = file.Read(buff)
 		if err != nil {
@@ -58,12 +59,16 @@ func UploadFile(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
+		// fmt.Printf("Uploaded File: %+v\n", handler.Filename)
+		// fmt.Printf("File Size: %+v\n", handler.Size)
+		// fmt.Printf("MIME Header: %+v\n", handler.Header)
+
 		// setup max-upload
 		const MAX_UPLOAD_SIZE = 10 << 20
 		r.ParseMultipartForm(MAX_UPLOAD_SIZE)
 		if r.ContentLength > MAX_UPLOAD_SIZE {
 			w.WriteHeader(http.StatusBadRequest)
-			response := Result{Code: http.StatusBadRequest, Message: "Max size in 1mb"}
+			response := Result{Code: http.StatusBadRequest, Message: "Max size in 10mb"}
 			json.NewEncoder(w).Encode(response)
 			return
 		}
@@ -90,10 +95,9 @@ func UploadFile(next http.HandlerFunc) http.HandlerFunc {
 		tempFile.Write(fileBytes)
 
 		data := tempFile.Name()
-		// Delete 1 line split uploads/ code ...
-		// filename := data[8:]
+		// filename := data[8:] // split uploads/
 
-		// add data variable to ctx (on parameter 3) ...
+		// add filename to ctx
 		ctx := context.WithValue(r.Context(), "dataFile", data)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
