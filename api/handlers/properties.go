@@ -180,7 +180,7 @@ func (h *handlerProperty) AddProperty(w http.ResponseWriter, r *http.Request) {
 		Description: property.Description,
 		Size:        property.Size,
 		District:    property.District,
-		Image:       resp.SecureURL,
+		Image:       property.Image,
 		UserID:      property.UserID,
 	}
 
