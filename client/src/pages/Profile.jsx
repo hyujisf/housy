@@ -169,7 +169,6 @@ export default function Profile() {
 										src={state.user.image}
 										alt={state.user.username + " Housy Profile Image"}
 									/>
-									<Image className={css.CardImage} src={+user?.image} />
 									{/* <Link to='/'>back to home</Link> */}
 								</div>
 								<Button
