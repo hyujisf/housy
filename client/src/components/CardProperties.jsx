@@ -38,7 +38,7 @@ export default function CardProperties(props) {
 									className={css.PrimaryImage}
 									src={
 										// "https://3408-2404-8000-1004-b94f-71a6-be6-bec4-1ca1.ap.ngrok.io/uploads/"
-										"http://localhost:5000/uploads/" + room.image
+										room.image
 									}
 								/>
 							</div>
