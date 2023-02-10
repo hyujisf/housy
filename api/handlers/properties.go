@@ -116,7 +116,7 @@ func (h *handlerProperty) AddProperty(w http.ResponseWriter, r *http.Request) {
 		Description: r.FormValue("description"),
 		Size:        size,
 		District:    r.FormValue("district"),
-		Image:       filepath,
+		// Image:       filepath,
 	}
 
 	validation := validator.New()
