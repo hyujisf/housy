@@ -196,7 +196,7 @@ export default function AddProperty() {
 								<option>-</option>
 								{cities.map((e, k) => {
 									return (
-										<option key={k} value={e.value}>
+										<option key={k} value={e.id}>
 											{e.name}
 										</option>
 									);
