@@ -9,7 +9,7 @@ import moment from "moment";
 import Toast from "lib/sweetAlerts";
 import css from "./index.module.css";
 
-export const OrderModal = (props) => {
+const OrderModal = (props) => {
 	const navigate = useNavigate();
 
 	const [state, dispatch] = useContext(AppContext);
@@ -158,3 +158,5 @@ export const OrderModal = (props) => {
 		</Modal>
 	);
 };
+
+export default OrderModal;
