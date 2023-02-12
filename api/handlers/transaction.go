@@ -24,14 +24,14 @@ import (
 // Declare MIDTRANS KEY
 //
 //	var KEY = coreapi.Client{
-//		SERVER: os.Getenv("SERVER_KEY"),
+//		SERVER: os.Getenv("MIDTRANS_SERVER_KEY"),
 //		CLIENT: os.Getenv("CLIENT_KEY"),
 //	}
 //
 // Declare Coreapi Client ...
 var c = coreapi.Client{
-	ServerKey: os.Getenv("SERVER_KEY"),
-	ClientKey: os.Getenv("CLIENT_KEY"),
+	ServerKey: os.Getenv("MIDTRANS_SERVER_KEY"),
+	ClientKey: os.Getenv("MIDTRANS_CLIENT_KEY"),
 }
 
 type handleTransaction struct {
@@ -140,7 +140,7 @@ func (h *handleTransaction) CreateMidtrans(w http.ResponseWriter, r *http.Reques
 	// Request payment token from midtrans ...
 	// 1. Initiate Snap client
 	var s = snap.Client{}
-	s.New(os.Getenv("SERVER_KEY"), midtrans.Sandbox)
+	s.New(os.Getenv("MIDTRANS_SERVER_KEY"), midtrans.Sandbox)
 	// Use to midtrans.Production if you want Production Environment (accept real transaction).
 
 	// 2. Initiate Snap request param
