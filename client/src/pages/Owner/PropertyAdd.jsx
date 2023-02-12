@@ -194,7 +194,7 @@ export default function AddProperty() {
 								onChange={handleChange}
 							>
 								<option>-</option>
-								{cities.map((e, k) => {
+								{cities?.map((e, k) => {
 									return (
 										<option key={k} value={e.id}>
 											{e.name}
