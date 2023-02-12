@@ -32,6 +32,7 @@ type PropertyResponse struct {
 	Name        string         `json:"name"`
 	CityID      int            `json:"city_id"`
 	City        City           `json:"city" `
+	District    string         `json:"district"`
 	Address     string         `json:"address"`
 	Price       float64        `json:"price"`
 	TypeRent    string         `json:"type_rent"`

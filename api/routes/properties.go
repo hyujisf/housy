@@ -19,6 +19,7 @@ func PropertyRoutes(r *mux.Router) {
 	r.HandleFunc("/properties", h.FindProperties).Methods("GET")
 	r.HandleFunc("/property/{id}", h.GetProperty).Methods("GET")
 	r.HandleFunc("/property", middleware.Auth(middleware.UploadFile(h.AddProperty))).Methods("POST")
+	r.HandleFunc("/cities", h.FindCities).Methods("GET")
 	// r.HandleFunc("/properties", middleware.Auth(h.FindProperties)).Methods("GET")
 	// r.HandleFunc("/property/{id}", h.GetProperty).Methods("GET")
 	// r.HandleFunc("/property", middleware.Auth(middleware.UploadFile(h.AddProperty))).Methods("POST")

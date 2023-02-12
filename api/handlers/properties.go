@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	propertiesdto "housy/dto/properties"
@@ -10,10 +11,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-
-	// "os"
-
-	"context"
 
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
@@ -34,27 +31,11 @@ func HandlerProperty(PropertyRepository repositories.PropertyRepository) *handle
 func (h *handlerProperty) FindProperties(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	// // get data user token
-	// userInfo := r.Context().Value("userInfo").(jwt.MapClaims)
-	// userRole := int(userInfo["list_as_id"].(float64))
-
-	// if userRole != 2 {
-	// 	w.WriteHeader(http.StatusUnauthorized)
-	// 	response := dto.ErrorResult{Code: http.StatusBadRequest, Message: "unauthorized as Tenant"}
-	// 	json.NewEncoder(w).Encode(response)
-	// 	return
-	// }
-
 	properties, err := h.PropertyRepository.FindProperties()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(err.Error())
 	}
-
-	// for i, p := range properties {
-	// 	imagePath := os.Getenv("PATH_FILE") + p.Image
-	// 	properties[i].Image = imagePath
-	// }
 
 	w.WriteHeader(http.StatusOK)
 	response := dto.SuccessResult{Code: http.StatusOK, Data: properties}
@@ -189,43 +170,16 @@ func (h *handlerProperty) AddProperty(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-// func (h *handlerProperty) DeleteProperty(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Set("Content-Type", "application/json")
+func (h *handlerProperty) FindCities(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 
-// 	id, _ := strconv.Atoi(mux.Vars(r)["id"])
-// 	property, err := h.PropertyRepository.GetProperty(id)
-// 	if err != nil {
-// 		w.WriteHeader(http.StatusBadRequest)
-// 		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
-// 		json.NewEncoder(w).Encode(response)
-// 		return
-// 	}
+	cities, err := h.PropertyRepository.FindCities()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(err.Error())
+	}
 
-// 	data, err := h.PropertyRepository.DeleteProperty(property)
-// 	if err != nil {
-// 		w.WriteHeader(http.StatusInternalServerError)
-// 		response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()}
-// 		json.NewEncoder(w).Encode(response)
-// 		return
-// 	}
-
-// 	w.WriteHeader(http.StatusOK)
-// 	response := dto.SuccessResult{Code: http.StatusOK, Data: convertResponseProperty(data)}
-// 	json.NewEncoder(w).Encode(response)
-// }
-
-// func convertResponseProperty(u models.Property) models.PropertyResponse {
-// 	return models.PropertyResponse{
-// 		ID:        u.ID,
-// 		Name:      u.Name,
-// 		City:      u.City,
-// 		Address:   u.Address,
-// 		Price:     u.Price,
-// 		TypeRent:  u.TypeRent,
-// 		Amenities: u.Amenities,
-// 		Bedroom:   u.Bedroom,
-// 		Bathroom:  u.Bathroom,
-// 		Image:     u.Image,
-// 		User: u.User,
-// 	}
-// }
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Code: http.StatusOK, Data: cities}
+	json.NewEncoder(w).Encode(response)
+}

@@ -11,6 +11,7 @@ type PropertyRepository interface {
 	GetProperty(ID int) (models.Property, error)
 	AddProperty(property models.Property) (models.Property, error)
 	DeleteProperty(property models.Property) (models.Property, error)
+	FindCities() ([]models.City, error)
 }
 
 func RepositoryProperty(db *gorm.DB) *repository {
@@ -41,4 +42,11 @@ func (r *repository) DeleteProperty(property models.Property) (models.Property, 
 	err := r.db.Delete(&property).Error
 
 	return property, err
+}
+
+func (r *repository) FindCities() ([]models.City, error) {
+	var cities []models.City
+	err := r.db.Find(&cities).Error
+
+	return cities, err
 }

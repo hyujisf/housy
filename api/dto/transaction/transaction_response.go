@@ -12,6 +12,4 @@ type TransactionResponse struct {
 	Checkout   string                  `json:"checkout" `
 	Status     string                  `json:"status" `
 	Total      float64                 `json:"total" `
-	TenantID   int                     `json:"tenant_id" `
-	OwnerID    int                     `json:"owner_id" `
 }

@@ -7,5 +7,5 @@ type TransactionRequest struct {
 	Checkout   string  `json:"checkout" form:"checkout" validate:"required"`
 	Status     string  `json:"status" form:"status" validate:"required"`
 	Total      float64 `json:"total" form:"total" validate:"required"`
-	UserID     int     `json:"user_id" form:"user_id" validate:"required" `
+	UserID     int     `json:"user_id" form:"user_id"`
 }
