@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import Layout from "layouts/withoutSearchbar";
 import { Form, Col, Button } from "react-bootstrap";
 
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { API } from "lib/api";
 
 import css from "./PropertyAdd.module.css";
 import Toast from "lib/sweetAlerts";
-import { cities, period, amenities, nums } from "data/AddProperty";
+import { period, amenities, nums } from "data/AddProperty";
 
 export default function AddProperty() {
 	//Store all category data
@@ -25,6 +25,11 @@ export default function AddProperty() {
 		description: "",
 		size: "",
 		image: "",
+	});
+
+	let { data: cities } = useQuery("getCitiesCache", async () => {
+		const response = await API.get("/cities");
+		return response.data.data;
 	});
 
 	// For handle if category selected
@@ -87,7 +92,8 @@ export default function AddProperty() {
 				title: "Property baru telah berhasil ditambahkan",
 			});
 
-			// e.target.reset();
+			setPreview(null);
+			e.target.reset();
 		} catch (err) {
 			// console.log(err);
 

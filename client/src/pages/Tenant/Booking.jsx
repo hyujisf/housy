@@ -1,37 +1,106 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
+import { useQuery, useMutation } from "react-query";
 import { Link } from "react-router-dom";
-import Layout from "layouts/withSearchbar";
-import Modal from "components/Modals/Booking";
-
+import { MillisToDate } from "lib/dateConvertion";
 import { Button, Image, Table } from "react-bootstrap";
-import logo from "assets/icons/Logo.svg";
-import Stepper from "assets/icons/Stepper.svg";
-
-import css from "./Booking.module.css";
 import { toCurrency } from "lib/Currency";
 import { API } from "lib/api";
 
-import { useQuery } from "react-query";
-import { AppContext } from "context/AppContext";
-
 import moment from "moment/moment";
-import { MillisToDate } from "lib/dateConvertion";
+import logo from "assets/icons/Logo.svg";
+import Stepper from "assets/icons/Stepper.svg";
+import Layout from "layouts/withSearchbar";
+import Modal from "components/Modals/Booking";
+import Toast from "lib/sweetAlerts";
+
+import css from "./Booking.module.css";
+
 export default function MyBooking() {
-	const [state, dispatch] = useContext(AppContext);
-	const [showModal, setShowModal] = useState();
-
-	const data = JSON.parse(localStorage.getItem("Booking"));
-
-	let { data: user } = useQuery("userBookCache", async () => {
-		const response = await API.get("/user/" + state.user.id);
+	let { data: transaction } = useQuery("getBookingCache", async () => {
+		const response = await API.get("/myBooking");
 		return response.data.data;
 	});
-	console.log("data user", user);
-	let { data: property } = useQuery("propertyBookCache", async () => {
-		const response = await API.get("/property/" + data.property);
-		return response.data.data;
+
+	useEffect(() => {
+		//change this to the script source you want to load, for example this is snap.js sandbox env
+		const midtransScriptUrl = "https://app.sandbox.midtrans.com/snap/snap.js";
+		//change this according to your client-key
+		const myMidtransClientKey = "SB-Mid-client-MxZZnkEzX-K3qdGi";
+
+		let scriptTag = document.createElement("script");
+		scriptTag.src = midtransScriptUrl;
+		// optional if you want to set script attribute
+		// for example snap.js have data-client-key attribute
+		scriptTag.setAttribute("data-client-key", myMidtransClientKey);
+
+		document.body.appendChild(scriptTag);
+		return () => {
+			document.body.removeChild(scriptTag);
+		};
+	}, []);
+
+	const handlePay = useMutation(async () => {
+		try {
+			// Get data from transaction
+			//   // Data body
+			//   const body = JSON.stringify(data);
+
+			//Configuration
+			const config = {
+				// method: "PATCH",
+				headers: {
+					Authorization: "Basic " + localStorage.token,
+					"Content-type": "application/json",
+				},
+			};
+
+			// Insert transaction data
+			const response = await API.get(
+				"/createMidtrans/" + transaction?.id,
+				config
+			);
+			console.log("midtrans response", response);
+			const token = response.data.data.token;
+			console.log("token", token);
+
+			window.snap.pay(token, {
+				onSuccess: function (result) {
+					/* You may add your own implementation here */
+					console.log(result);
+					alert("Payment success");
+					Toast.fire({
+						icon: "success",
+						title: "Payment Success!",
+					});
+				},
+				onPending: function (result) {
+					/* You may add your own implementation here */
+					console.log(result);
+					Toast.fire({
+						icon: "warning",
+						title: "Payment Pending!",
+					});
+				},
+				onError: function (result) {
+					/* You may add your own implementation here */
+					console.log(result);
+					Toast.fire({
+						icon: "error",
+						title: "Payment Failed!",
+					});
+				},
+				onClose: function () {
+					/* You may add your own implementation here */
+					Toast.fire({
+						icon: "warning",
+						title: "you closed the popup without finishing the payment!",
+					});
+				},
+			});
+		} catch (error) {
+			console.log(error);
+		}
 	});
-	console.log("data property", property);
 
 	const title = "My Booking";
 	document.title = "Housy | " + title;
@@ -40,19 +109,38 @@ export default function MyBooking() {
 		<Layout className='bg-tertiary'>
 			<div className=''>
 				<div className={css.MaxWidth}>
-					{data?.checkin ? (
+					{transaction === undefined ? (
+						<div
+							className='d-flex align-items-center justify-content-center'
+							style={{ minHeight: "90vh" }}
+						>
+							<div className='text-center bg-white rounded-4 p-5 shadow'>
+								<h2>Anda Belum Melakukan Transaksi</h2>
+								<p>Silahkan melakukan booking terlebih dahulu</p>
+								<Link to='/' className='btn btn-primary px-4 py-2 mt-2'>
+									Kembali
+								</Link>
+							</div>
+						</div>
+					) : (
 						<div className={css.Card}>
 							<div className='d-flex justify-content-between'>
 								<div className={css.CardLeft}>
 									<Image src={logo} alt='Logo' className={css.ImgLogo} />
 									<div className='d-flex gap-3 align-items-center'>
 										<div className='pe-4'>
-											<h2>{property?.name}</h2>
+											<h2>{transaction?.property.name}</h2>
 											<p style={{ width: "19.5rem" }}>
-												{property?.address}, {property?.district},{" "}
-												{property?.city.name}
+												{transaction?.property.address}, <br></br>
+												{transaction?.property.district},{" "}
+												{transaction?.property.city.name}
 											</p>
-											<span className={css.Badge}>{data.status}</span>
+											<span
+												className={css.Badge}
+												style={{ textTransform: "capitalize" }}
+											>
+												{transaction?.status}
+											</span>
 										</div>
 										<div
 											style={{ width: "14rem" }}
@@ -65,13 +153,17 @@ export default function MyBooking() {
 												<div>
 													<strong className='d-block'>Checkin</strong>
 													<span className='text-secondary'>
-														{MillisToDate(data?.checkin)}
+														{moment(transaction?.checkin).format(
+															"DD MMMM YYYY"
+														)}
 													</span>
 												</div>
 												<div>
 													<strong className='d-block'>Checkout</strong>
 													<span className='text-secondary'>
-														{MillisToDate(data?.checkout)}
+														{moment(transaction?.checkout).format(
+															"DD MMMM YYYY"
+														)}
 													</span>
 												</div>
 											</div>
@@ -80,7 +172,7 @@ export default function MyBooking() {
 											<div>
 												<strong className='d-block'>Amenities</strong>
 												<ul>
-													{property?.amenities.map((x, k) => {
+													{transaction?.property.amenities.map((x, k) => {
 														return (
 															<li key={k} className='text-secondary'>
 																{x}
@@ -92,7 +184,7 @@ export default function MyBooking() {
 											<div>
 												<strong className='d-block'>Type of rent</strong>
 												<span className='text-secondary ps-4'>
-													{property?.type_rent}
+													{transaction?.property.type_rent}
 												</span>
 											</div>
 										</div>
@@ -103,8 +195,10 @@ export default function MyBooking() {
 										<h1 className='fw-bold'>Booking</h1>
 
 										<p>
-											<strong>{moment(data?.checkin).format("dddd")}</strong>,{" "}
-											{MillisToDate(data?.checkin)}
+											<strong>
+												{moment(transaction?.checkin).format("dddd")}
+											</strong>
+											, {moment(transaction?.checkin).format("DD MMMM YYYY")}
 										</p>
 									</div>
 									<div className={css.WrapperCardImage}>
@@ -130,11 +224,11 @@ export default function MyBooking() {
 									<tbody>
 										<tr className='text-secondary'>
 											<td>1</td>
-											<td>{user?.fullname}</td>
-											<td>{user?.gender}</td>
-											<td>{user?.phone}</td>
+											<td>{transaction?.user.fullname}</td>
+											<td>{transaction?.user.gender}</td>
+											<td>{transaction?.user.phone}</td>
 											<td className='fw-semibold text-black'>
-												Long Time Rent : 1 Year
+												Long Time Rent : 1 {transaction?.property.type_rent}
 											</td>
 										</tr>
 										<tr>
@@ -142,7 +236,7 @@ export default function MyBooking() {
 											<td className='fw-semibold' style={{ width: "18rem" }}>
 												total <span style={{ padding: "0 2.45rem" }}></span> :{" "}
 												<span className='text-danger'>
-													{toCurrency(data?.total)}
+													Rp. {transaction?.property.price}
 												</span>
 											</td>
 										</tr>
@@ -153,7 +247,7 @@ export default function MyBooking() {
 								<div className='d-flex justify-content-end'>
 									<Button
 										type='button'
-										// onClick={RegistingHistory}
+										onClick={() => handlePay.mutate()}
 										className={"btn btn-primary fw-bold fs-5 ms-auto"}
 										style={{ padding: "1rem 6rem" }}
 									>
@@ -162,28 +256,9 @@ export default function MyBooking() {
 								</div>
 							</div>
 						</div>
-					) : (
-						<div
-							className='d-flex align-items-center justify-content-center'
-							style={{ minHeight: "90vh" }}
-						>
-							<div className='text-center bg-white rounded-4 p-5 shadow'>
-								<h2>Booking Kosong</h2>
-								<p>Silahkan lakukan checkin terlebih dahulu</p>
-								<Link to='/' className='btn btn-primary px-4 py-2 mt-2'>
-									Kembali
-								</Link>
-							</div>
-						</div>
 					)}
 				</div>
 			</div>
-
-			<Modal
-				show={showModal}
-				// gotoregister={gotoRegistration}
-				onHide={() => setShowModal(false)}
-			/>
 		</Layout>
 	);
 }
