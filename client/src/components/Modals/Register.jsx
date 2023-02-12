@@ -77,13 +77,13 @@ const RegisterModal = (props) => {
 			} else {
 				Toast.fire({
 					icon: "error",
-					title: "Failed to Sign Up",
+					title: "Failed to Sign Up, Field cannot be Empty!!!",
 				});
 			}
 		} catch (error) {
 			Toast.fire({
 				icon: "error",
-				title: "Failed to Sign Up, field Cannot be Empty!!!",
+				title: "Failed to Sign Up",
 			});
 			console.log(error);
 		}
