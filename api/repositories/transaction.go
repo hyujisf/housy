@@ -61,3 +61,16 @@ func (r *repository) GetMyBooking(ID int) (models.Transaction, error) {
 
 	return Transaction, err
 }
+
+func (r *repository) getHistoryTenant(ID int) (models.Transaction, error) {
+	var Transaction models.Transaction
+	err := r.db.Preload("Property.City").Preload("User").Where("user_id = ? ", ID).Error
+
+	return Transaction, err
+}
+func (r *repository) getHistoryOwner(ID int) (models.Transaction, error) {
+	var Transaction models.Transaction
+	err := r.db.Preload("Property.City").Preload("User").Error
+
+	return Transaction, err
+}

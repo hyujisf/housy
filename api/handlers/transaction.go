@@ -21,14 +21,6 @@ import (
 	"github.com/midtrans/midtrans-go/snap"
 )
 
-// Declare MIDTRANS KEY
-//
-//	var KEY = coreapi.Client{
-//		SERVER: os.Getenv("MIDTRANS_SERVER_KEY"),
-//		CLIENT: os.Getenv("CLIENT_KEY"),
-//	}
-//
-// Declare Coreapi Client ...
 var c = coreapi.Client{
 	ServerKey: os.Getenv("MIDTRANS_SERVER_KEY"),
 	ClientKey: os.Getenv("MIDTRANS_CLIENT_KEY"),
@@ -143,7 +135,7 @@ func (h *handleTransaction) CreateMidtrans(w http.ResponseWriter, r *http.Reques
 	s.New(os.Getenv("MIDTRANS_SERVER_KEY"), midtrans.Sandbox)
 	// Use to midtrans.Production if you want Production Environment (accept real transaction).
 
-	// 2. Initiate Snap request param
+	// 2. Initiate Snap request paramvar s
 	req := &snap.Request{
 		TransactionDetails: midtrans.TransactionDetails{
 			OrderID:  strconv.Itoa(dataTransactions.ID),

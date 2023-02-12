@@ -18,4 +18,6 @@ func TransRoute(r *mux.Router) {
 	r.HandleFunc("/notification", h.Notification).Methods("POST")
 
 	r.HandleFunc("/myBooking", middleware.Auth(h.GetMyBooking)).Methods("GET")
+	r.HandleFunc("/getHistoryTenant", middleware.Auth(h.GetMyBooking)).Methods("GET")
+	r.HandleFunc("/getHistoryOwner", middleware.Auth(h.GetMyBooking)).Methods("GET")
 }

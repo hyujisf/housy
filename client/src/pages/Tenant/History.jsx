@@ -8,14 +8,15 @@ import Stepper from "assets/icons/Stepper.svg";
 
 import css from "./History.module.css";
 import { toCurrency } from "lib/Currency";
+import { API } from "lib/api";
+import { useQuery } from "react-query";
 
 import moment from "moment/moment";
 export default function History() {
-	const Book = JSON.parse(localStorage.getItem("isLogin"));
-	// const user = JSON.parse(localStorage.getItem("isLogin"));
-	// const Book = JSON.parse(localStorage.getItem("BookingData")).find(
-	// 	(obj) => obj.username === user.username
-	// );
+	let { data: history } = useQuery("getTenantHistory", async () => {
+		const response = await API.get("/getHistoryTenant");
+		return response.data.data;
+	});
 
 	const title = "History Transaction";
 	document.title = "Housy | " + title;
@@ -24,16 +25,29 @@ export default function History() {
 		<Layout className='bg-tertiary'>
 			<div className=''>
 				<div className={css.MaxWidth}>
-					{Book ? (
+					{history === undefined ? (
+						<div
+							className='d-flex align-items-center justify-content-center'
+							style={{ minHeight: "90vh" }}
+						>
+							<div className='text-center bg-white rounded-4 p-5 shadow'>
+								<h2>Transaksi Kosong</h2>
+								<p>Silahkan lakukan checkin terlebih dahulu</p>
+								<Link to='/' className='btn btn-primary px-4 py-2 mt-2'>
+									Kembali
+								</Link>
+							</div>
+						</div>
+					) : (
 						<div className={css.Card}>
 							<div className='d-flex justify-content-between'>
 								<div className={css.CardLeft}>
 									<Image src={logo} alt='Logo' className={css.ImgLogo} />
 									<div className='d-flex gap-3 align-items-center'>
 										<div className='pe-4'>
-											<h2>{Book.RoomName}</h2>
-											<p style={{ width: "19.5rem" }}>{Book.StreetName}</p>
-											{Book.status === "Pending" ? (
+											<h2>{history.RoomName}</h2>
+											<p style={{ width: "19.5rem" }}>{history.StreetName}</p>
+											{history.status === "Pending" ? (
 												<span className={css.BadgeWarning}>
 													Waiting Approve
 												</span>
@@ -51,12 +65,14 @@ export default function History() {
 											<div className='d-flex flex-column gap-4'>
 												<div>
 													<strong className='d-block'>Checkin</strong>
-													<span className='text-secondary'>{Book.checkin}</span>
+													<span className='text-secondary'>
+														{history.checkin}
+													</span>
 												</div>
 												<div>
 													<strong className='d-block'>Checkout</strong>
 													<span className='text-secondary'>
-														{Book.checkout}
+														{history.checkout}
 													</span>
 												</div>
 											</div>
@@ -65,7 +81,7 @@ export default function History() {
 											<div>
 												<strong className='d-block'>Amenities</strong>
 												<ul>
-													{Book.amenities.map((x, k) => {
+													{history.amenities.map((x, k) => {
 														return (
 															<li key={k} className='text-secondary'>
 																{x}
@@ -76,7 +92,9 @@ export default function History() {
 											</div>
 											<div>
 												<strong className='d-block'>Type of rent</strong>
-												<span className='text-secondary ps-4'>{Book.TOR}</span>
+												<span className='text-secondary ps-4'>
+													{history.TOR}
+												</span>
 											</div>
 										</div>
 									</div>
@@ -86,8 +104,8 @@ export default function History() {
 										<h1 className='fw-bold'>Booking</h1>
 
 										<p>
-											<strong>{moment(Book.checkin).format("dddd")}</strong>,{" "}
-											{Book.checkin}
+											<strong>{moment(history.checkin).format("dddd")}</strong>,{" "}
+											{history.checkin}
 										</p>
 									</div>
 									<div className={css.WrapperCardImage}>
@@ -113,9 +131,9 @@ export default function History() {
 									<tbody>
 										<tr className='text-secondary'>
 											<td>1</td>
-											<td>{Book.fullname}</td>
-											<td>{Book.gender}</td>
-											<td>{Book.phone}</td>
+											<td>{history.fullname}</td>
+											<td>{history.gender}</td>
+											<td>{history.phone}</td>
 											<td className='fw-semibold text-black'>
 												Long Time Rent : 1 Year
 											</td>
@@ -124,32 +142,19 @@ export default function History() {
 											<td colSpan='4'></td>
 											<td className='fw-semibold' style={{ width: "18rem" }}>
 												total <span style={{ padding: "0 2.45rem" }}></span> :{" "}
-												{Book.status === "Pending" ? (
+												{history.status === "Pending" ? (
 													<span className={"text-danger"}>
-														{toCurrency(Book.NetCost)}
+														{toCurrency(history.NetCost)}
 													</span>
 												) : (
 													<span className={css.TextSuccess}>
-														{toCurrency(Book.NetCost)}
+														{toCurrency(history.NetCost)}
 													</span>
 												)}
 											</td>
 										</tr>
 									</tbody>
 								</Table>
-							</div>
-						</div>
-					) : (
-						<div
-							className='d-flex align-items-center justify-content-center'
-							style={{ minHeight: "90vh" }}
-						>
-							<div className='text-center bg-white rounded-4 p-5 shadow'>
-								<h2>Transaksi Kosong</h2>
-								<p>Silahkan lakukan checkin terlebih dahulu</p>
-								<Link to='/' className='btn btn-primary px-4 py-2 mt-2'>
-									Kembali
-								</Link>
 							</div>
 						</div>
 					)}
