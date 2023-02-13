@@ -13,7 +13,6 @@ export default function LoginModal(props) {
 
 	const [state, dispatch] = useContext(AppContext);
 
-	const [message, setMessage] = useState(null);
 	const [form, setForm] = useState({
 		username: "",
 		password: "",
