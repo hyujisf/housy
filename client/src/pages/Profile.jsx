@@ -1,10 +1,11 @@
 import React, { useState, useContext } from "react";
 // import { Link } from "react-router-dom";
 import { AppContext } from "context/AppContext";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import { API } from "lib/api";
 import css from "./Profile.module.css";
 import { Image, Button } from "react-bootstrap";
+import { useMutation } from "react-query";
 
 import { HiUserCircle, HiMail } from "react-icons/hi";
 import {
@@ -16,22 +17,66 @@ import {
 import { TbGenderBigender } from "react-icons/tb";
 import PassModal from "components/Modals/ChangePassword";
 import Layout from "layouts/withoutSearchbar";
+import { Form } from "react-router-dom";
+import Swal from "sweetalert2";
+import ImageModal from "components/Modals/ChangeImage";
 
 export default function Profile() {
 	const [state, dispatch] = useContext(AppContext);
 	const [PasswordModal, setPasswordModal] = useState(false);
-	// const isLogin = JSON.parse(localStorage.getItem("isLogin"));
-	// const profilImage = process.env.PUBLIC_URL + "/img/Profile/";
+	const [imageModal, setImageModal] = useState(false)
+	const queryClient = useQueryClient();
 
-	// const user = JSON.parse(localStorage.getItem("userData")).find(
-	// 	(obj) => obj.username === isLogin.username
-	// );
-	// console.log("user data", user);
 
 	let { data: user } = useQuery("ProfileCache", async () => {
 		const response = await API.get("/user/" + state.user.id);
 		return response.data.data;
 	});
+
+	// const Toast = Swal.mixin({
+	// 	toast: true,
+	// 	position: "top-end",
+	// 	showConfirmButton: false,
+	// 	timer: 3000,
+	// 	timerProgressBar: true,
+	// 	didOpen: (toast) => {
+	// 		toast.addEventListener("mouseenter", Swal.stopTimer);
+	// 		toast.addEventListener("mouseleave", Swal.resumeTimer);
+	// 	},
+	// });
+
+	// const handleSubmit = useMutation(async (e) => {
+	// 	e.preventDefault();
+	// 	const formData = new FormData();
+	// 	formData.append("image", imageFile);
+	// 	try {
+	// 	  const response = await API.patch("/user/changeImage/" + state.user.id, formData);
+	// 	  Toast.fire({
+	// 		icon: "success",
+	// 		title: "Profile picture updated successfully",
+	// 	  });
+	// 	  await queryClient.invalidateQueries("ProfileCache");
+	// 	} catch (error) {
+	// 	  console.error(error);
+	// 	  Toast.fire({
+	// 		icon: "error",
+	// 		title: "Failed to update profile picture",
+	// 	  });
+	// 	}
+	// });
+	  
+
+
+
+	// const handleChange = (e) => {
+	// 	setImageFile(e.target.files[0]);
+	// 	// Create image url for preview
+	// 	// if (e.target.type === "file") {
+	// 	// 	let url = URL.createObjectURL(e.target.files[0]);
+			
+	// 	// }
+	// };
+	  
 
 	console.log("data showed", user);
 
@@ -113,9 +158,16 @@ export default function Profile() {
 									/>
 									{/* <Link to='/'>back to home</Link> */}
 								</div>
-								<Button className={"btn btn-primary w-100 py-3 fw-bold fs-5"}>
-									Change Photo Profil
-								</Button>
+							
+									<Button 
+										className={"btn btn-primary w-100 py-3 fw-bold fs-5"} 
+										
+										onClick={() => setImageModal(true)}
+									>
+										Change Photo Profil
+									</Button>
+								
+								
 							</div>
 						</div>
 					</div>
@@ -126,6 +178,9 @@ export default function Profile() {
 				show={PasswordModal}
 				// gotoregister={gotoRegistration}
 				onHide={() => setPasswordModal(false)}
+			/>
+			<ImageModal 
+				show={imageModal} onHide={() => setImageModal(false)} 
 			/>
 		</Layout>
 	);
