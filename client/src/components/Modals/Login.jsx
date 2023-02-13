@@ -68,9 +68,9 @@ export default function LoginModal(props) {
 		}
 	});
 
-	const goRegister = (e) => {
-		e.onHide();
-		e.toRegister();
+	const goRegister = (props) => {
+		props.onHide();
+		props.toRegister();
 	};
 
 	return (
