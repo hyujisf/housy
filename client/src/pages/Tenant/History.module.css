@@ -1,5 +1,6 @@
 .MaxWidth {
-	padding-top: 5.75rem;
+	padding-top: 6rem;
+	padding-bottom: 6rem;
 	padding-left: 12px;
 	padding-right: 12px;
 	margin-right: auto;
@@ -9,7 +10,7 @@
 }
 
 .Card {
-	margin-top: 5.5rem;
+	margin-top: 3rem;
 	border-radius: 1rem;
 	background-color: white;
 	padding: 3rem;
@@ -71,6 +72,12 @@
 .BadgeSuccess {
 	background-color: #e4f8e5;
 	color: #23e941;
+	border-radius: 0.5rem;
+	padding: 0.3rem 1.25rem;
+}
+.BadgeError {
+	background-color: #e6c2ca;
+	color: #ff0742;
 	border-radius: 0.5rem;
 	padding: 0.3rem 1.25rem;
 }

@@ -20,5 +20,6 @@ type PropertyResponse struct {
 	Size        int            `json:"size"`
 	District    string         `json:"district"`
 	Image       string         `json:"image" `
-	UserID      int            `json:"user"`
+	UserID      int            `json:"user_id"`
+	User        models.User    `json:"user"`
 }

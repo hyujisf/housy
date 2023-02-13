@@ -11,6 +11,7 @@ import (
 	"housy/repositories"
 	"log"
 	"net/http"
+	"strconv"
 
 	"time"
 
@@ -69,7 +70,7 @@ func (h *handlerAuth) Register(w http.ResponseWriter, r *http.Request) {
 		Gender:   request.Gender,
 		Phone:    request.Phone,
 		Address:  request.Address,
-		Image:    "https://api.dicebear.com/5.x/shapes/svg?seed=" + request.Email,
+		Image:    "https://api.dicebear.com/5.x/shapes/svg?seed=" + strconv.Itoa(int(time.Now().Unix())),
 	}
 
 	data, err := h.AuthRepository.Register(user)

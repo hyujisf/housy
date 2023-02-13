@@ -22,7 +22,8 @@ type Property struct {
 	Size        int            `json:"size" gorm:"type: int"`
 	Image       string         `json:"image" gorm:"type: varchar(255)"`
 	UserID      int            `json:"-" gorm:"type: int"`
-	User        User           `json:"-" gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" `
+	User        User           `json:"user" gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" `
+	Status      string         `json:"status" gorm:"type: varchar(255)"`
 	CreatedAt   time.Time      `json:"-"`
 	UpdatedAt   time.Time      `json:"-"`
 }

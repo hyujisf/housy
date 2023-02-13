@@ -1,6 +1,8 @@
 import React from "react";
 import { Image, Table, Modal, Button } from "react-bootstrap";
 import moment from "moment/moment";
+import { useQuery } from "react-query";
+import { API } from "lib/api";
 
 import logo from "../../../assets/icons/Logo.svg";
 import Stepper from "../../../assets/icons/Stepper.svg";
@@ -10,19 +12,16 @@ import { toCurrency } from "lib/Currency";
 import css from "./index.module.css";
 
 export default function VerifyTransaction(props) {
-	const data = JSON.parse(localStorage.getItem("BookingData"));
-	const id = props.TransactionID;
+	
+	const oneTransaction = props.transaction;
 
-	const setApprove = () => {
-		data[id].status = "Approved";
-		localStorage.setItem("BookingData", JSON.stringify(data));
-		props.onHide();
-	};
-	const setCancel = () => {
-		data[id].status = "Cancel";
-		localStorage.setItem("BookingData", JSON.stringify(data));
-		props.onHide();
-	};
+	// let { data: oneTransaction } = useQuery("getOneTransactionCache", async () => {
+	// 	const response = await API.get("/getTransaction/" + id);
+	// 	return response.data.data;
+	// });
+
+	console.log("getTrannnnnnn", oneTransaction)
+
 	return (
 		<Modal {...props} size='xl' centered>
 			<Modal.Body className='p-4'>
@@ -31,12 +30,23 @@ export default function VerifyTransaction(props) {
 						<Image src={logo} alt='Logo' className={css.ImgLogo} />
 						<div className='d-flex gap-3 align-items-center'>
 							<div className='pe-4'>
-								<h2>{data[id].RoomName}</h2>
-								<p style={{ width: "19.5rem" }}>{data[id].StreetName}</p>
-								{data[id].status === "Pending" ? (
-									<span className={css.BadgeWarning}>Waiting Approve</span>
+								<h2>{oneTransaction?.name}</h2>
+								<p style={{ width: "19.5rem" }}>
+									{oneTransaction?.property.address}, <br></br>{oneTransaction?.property.district}
+									, {oneTransaction?.property.city.name}
+								</p>
+								{oneTransaction?.status === "pending" || oneTransaction?.status === "waiting payment"? (
+									<span className={css.BadgeWarning} style={{textTransform: "capitalize"}}>
+										{oneTransaction?.status}
+									</span>
 								) : (
-									<span className={css.BadgeSuccess}>Approve</span>
+									<>
+									{oneTransaction?.status === "success" ? (
+										<span className={css.BadgeSuccess} style={{textTransform: "capitalize"}}>success</span>
+									) : (
+										<span className={css.BadgeDanger} style={{textTransform: "capitalize"}}>failed</span>
+									)}
+									</>
 								)}
 							</div>
 							<div
@@ -49,11 +59,13 @@ export default function VerifyTransaction(props) {
 								<div className='d-flex flex-column gap-4'>
 									<div>
 										<strong className='d-block'>Checkin</strong>
-										<span className='text-secondary'>{data[id].checkin}</span>
+										<span className='text-secondary'>{moment(oneTransaction?.checkin).format("DD MMMM YYYY")}</span>
 									</div>
 									<div>
 										<strong className='d-block'>Checkout</strong>
-										<span className='text-secondary'>{data[id].checkout}</span>
+										<span className='text-secondary'>
+											{moment(oneTransaction?.checkout).format("DD MMMM YYYY")}
+										</span>
 									</div>
 								</div>
 							</div>
@@ -61,7 +73,7 @@ export default function VerifyTransaction(props) {
 								<div>
 									<strong className='d-block'>Amenities</strong>
 									<ul>
-										{data[id].amenities.map((x, k) => {
+										{oneTransaction?.property.amenities.map((x, k) => {
 											return (
 												<li key={k} className='text-secondary'>
 													{x}
@@ -72,7 +84,7 @@ export default function VerifyTransaction(props) {
 								</div>
 								<div>
 									<strong className='d-block'>Type of rent</strong>
-									<span className='text-secondary ps-4'>{data[id].TOR}</span>
+									<span className='text-secondary ps-4'>{oneTransaction?.property.type_rent}</span>
 								</div>
 							</div>
 						</div>
@@ -82,8 +94,8 @@ export default function VerifyTransaction(props) {
 							<h1 className='fw-bold'>INVOICE</h1>
 
 							<p>
-								<strong>{moment(data[id].checkin).format("dddd")}</strong>,{" "}
-								{data[id].checkin}
+								<strong>{moment(oneTransaction?.checkin).format("dddd")}</strong>,{" "}
+								{moment(oneTransaction?.checkin).format("DD MMMM YYYY")}
 							</p>
 						</div>
 						<div className={css.WrapperCardImage}>
@@ -109,24 +121,24 @@ export default function VerifyTransaction(props) {
 						<tbody>
 							<tr className='text-secondary'>
 								<td>1</td>
-								<td>{data[id].fullname}</td>
-								<td>{data[id].gender}</td>
-								<td>{data[id].phone}</td>
+								<td>{oneTransaction?.user.fullname}</td>
+								<td>{oneTransaction?.user.gender}</td>
+								<td>{oneTransaction?.user.phone}</td>
 								<td className='fw-semibold text-black'>
-									Long Time Rent : 1 Year
+									Long Time Rent : 1 {oneTransaction?.property.type_rent}
 								</td>
 							</tr>
 							<tr>
 								<td colSpan='4'></td>
 								<td className='fw-semibold' style={{ width: "18rem" }}>
 									total <span style={{ padding: "0 2.45rem" }}></span> :{" "}
-									{data[id].status === "Pending" ? (
+									{oneTransaction?.status === "pending" || oneTransaction?.status === "waiting payment" ? (
 										<span className={"text-danger"}>
-											{toCurrency(data[id].NetCost)}
+											Rp. {oneTransaction?.total}
 										</span>
 									) : (
-										<span className={css.TextSuccess}>
-											{toCurrency(data[id].NetCost)}
+										<span className='text-success'>
+											Rp. {oneTransaction?.total}
 										</span>
 									)}
 								</td>
@@ -134,26 +146,7 @@ export default function VerifyTransaction(props) {
 						</tbody>
 					</Table>
 				</div>
-				<div className='d-flex justify-content-end'>
-					<div className='d-flex gap-3'>
-						<Button
-							size='lg'
-							type='button'
-							onClick={setCancel}
-							className={"btn btn-danger fw-bold fs-5 ms-auto px-4"}
-						>
-							Cancel
-						</Button>
-						<Button
-							size='lg'
-							type='button'
-							onClick={setApprove}
-							className={"btn btn-success fw-bold fs-5 ms-auto px-4"}
-						>
-							Approve
-						</Button>
-					</div>
-				</div>
+				
 			</Modal.Body>
 		</Modal>
 	);

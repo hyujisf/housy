@@ -12,8 +12,10 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/cloudinary/cloudinary-go/v2"
-	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
+	// "os"
+
+	"github.com/cloudinary/cloudinary-go"
+	"github.com/cloudinary/cloudinary-go/api/uploader"
 	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/gorilla/mux"
@@ -31,11 +33,27 @@ func HandlerProperty(PropertyRepository repositories.PropertyRepository) *handle
 func (h *handlerProperty) FindProperties(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
+	// // get data user token
+	// userInfo := r.Context().Value("userInfo").(jwt.MapClaims)
+	// userRole := int(userInfo["list_as_id"].(float64))
+
+	// if userRole != 2 {
+	// 	w.WriteHeader(http.StatusUnauthorized)
+	// 	response := dto.ErrorResult{Code: http.StatusBadRequest, Message: "unauthorized as Tenant"}
+	// 	json.NewEncoder(w).Encode(response)
+	// 	return
+	// }
+
 	properties, err := h.PropertyRepository.FindProperties()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(err.Error())
 	}
+
+	// for i, p := range properties {
+	// 	imagePath := os.Getenv("PATH_FILE") + p.Image
+	// 	properties[i].Image = imagePath
+	// }
 
 	w.WriteHeader(http.StatusOK)
 	response := dto.SuccessResult{Code: http.StatusOK, Data: properties}
@@ -63,6 +81,8 @@ func (h *handlerProperty) GetProperty(w http.ResponseWriter, r *http.Request) {
 func (h *handlerProperty) AddProperty(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
+	var devStat = os.Getenv("DEV_STATUS")
+
 	// get data user token
 	userInfo := r.Context().Value("userInfo").(jwt.MapClaims)
 	userId := int(userInfo["id"].(float64))
@@ -77,7 +97,9 @@ func (h *handlerProperty) AddProperty(w http.ResponseWriter, r *http.Request) {
 
 	// Get dataFile from midleware and store to filename variable here ...
 	dataContex := r.Context().Value("dataFile") // add this code
-	filepath := dataContex.(string)             // add this code
+	filename := dataContex.(string)
+
+	// add this code
 
 	city_id, _ := strconv.Atoi(r.FormValue("city_id"))
 	price, _ := strconv.Atoi(r.FormValue("price"))
@@ -97,7 +119,8 @@ func (h *handlerProperty) AddProperty(w http.ResponseWriter, r *http.Request) {
 		Description: r.FormValue("description"),
 		Size:        size,
 		District:    r.FormValue("district"),
-		Image:       filepath,
+		Image:       filename,
+		Status:      "avaible",
 	}
 
 	validation := validator.New()
@@ -116,13 +139,6 @@ func (h *handlerProperty) AddProperty(w http.ResponseWriter, r *http.Request) {
 
 	cld, _ := cloudinary.NewFromParams(CLOUD_NAME, API_KEY, API_SECRET)
 
-	// Upload file to Cloudinary ...
-	resp, err := cld.Upload.Upload(ctx, filepath, uploader.UploadParams{Folder: "housy"})
-
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-
 	property := models.Property{
 		Name:        request.Name,
 		CityId:      request.CityId,
@@ -135,8 +151,21 @@ func (h *handlerProperty) AddProperty(w http.ResponseWriter, r *http.Request) {
 		Description: request.Description,
 		Size:        request.Size,
 		District:    request.District,
-		Image:       resp.SecureURL,
 		UserID:      userId,
+		Status:      request.Status,
+		Image:       request.Image,
+	}
+
+	if devStat != "development" {
+
+		// Upload file to Cloudinary ...
+		resp, err := cld.Upload.Upload(ctx, filename, uploader.UploadParams{Folder: "housy"})
+
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+		property.Image = resp.SecureURL
+
 	}
 
 	data, err := h.PropertyRepository.AddProperty(property)
@@ -173,13 +202,70 @@ func (h *handlerProperty) AddProperty(w http.ResponseWriter, r *http.Request) {
 func (h *handlerProperty) FindCities(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
+	// // get data user token
+	// userInfo := r.Context().Value("userInfo").(jwt.MapClaims)
+	// userRole := int(userInfo["list_as_id"].(float64))
+
+	// if userRole != 2 {
+	// 	w.WriteHeader(http.StatusUnauthorized)
+	// 	response := dto.ErrorResult{Code: http.StatusBadRequest, Message: "unauthorized as Tenant"}
+	// 	json.NewEncoder(w).Encode(response)
+	// 	return
+	// }
+
 	cities, err := h.PropertyRepository.FindCities()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(err.Error())
 	}
 
+	// for i, p := range properties {
+	// 	imagePath := os.Getenv("PATH_FILE") + p.Image
+	// 	properties[i].Image = imagePath
+	// }
+
 	w.WriteHeader(http.StatusOK)
 	response := dto.SuccessResult{Code: http.StatusOK, Data: cities}
 	json.NewEncoder(w).Encode(response)
 }
+
+// func (h *handlerProperty) DeleteProperty(w http.ResponseWriter, r *http.Request) {
+// 	w.Header().Set("Content-Type", "application/json")
+
+// 	id, _ := strconv.Atoi(mux.Vars(r)["id"])
+// 	property, err := h.PropertyRepository.GetProperty(id)
+// 	if err != nil {
+// 		w.WriteHeader(http.StatusBadRequest)
+// 		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
+// 		json.NewEncoder(w).Encode(response)
+// 		return
+// 	}
+
+// 	data, err := h.PropertyRepository.DeleteProperty(property)
+// 	if err != nil {
+// 		w.WriteHeader(http.StatusInternalServerError)
+// 		response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()}
+// 		json.NewEncoder(w).Encode(response)
+// 		return
+// 	}
+
+// 	w.WriteHeader(http.StatusOK)
+// 	response := dto.SuccessResult{Code: http.StatusOK, Data: convertResponseProperty(data)}
+// 	json.NewEncoder(w).Encode(response)
+// }
+
+// func convertResponseProperty(u models.Property) models.PropertyResponse {
+// 	return models.PropertyResponse{
+// 		ID:        u.ID,
+// 		Name:      u.Name,
+// 		City:      u.City,
+// 		Address:   u.Address,
+// 		Price:     u.Price,
+// 		TypeRent:  u.TypeRent,
+// 		Amenities: u.Amenities,
+// 		Bedroom:   u.Bedroom,
+// 		Bathroom:  u.Bathroom,
+// 		Image:     u.Image,
+// 		User: u.User,
+// 	}
+// }

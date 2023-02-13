@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
 	ToggleButton,
 	Button,
@@ -10,6 +10,11 @@ import {
 	Col,
 } from "react-bootstrap";
 import { HiCalendar } from "react-icons/hi2";
+import { duration, bed, bath, amenities } from "data/Filter";
+import { useMutation } from "react-query";
+import { API } from "lib/api";
+import Swal from "sweetalert2";
+import { AppContext } from "context/AppContext";
 
 export default function Sidebar(props) {
 	// const [checked, setChecked] = useState(false);
@@ -17,47 +22,74 @@ export default function Sidebar(props) {
 	const [dateVal, setDate] = useState("");
 	const [bedVal, setBed] = useState("");
 	const [bathVal, setBath] = useState("");
-	const [amenitiesVal, setAmenities] = useState("");
+	const [amenitiesVal, setAmenities] = useState([]);
 	const [budgetVal, setBudget] = useState(9000000);
 
-	const startFind = () => {
-		props.SearchRoom({
-			duration: durationVal,
-			date: dateVal,
-			bedroom: bedVal,
-			bathroom: bathVal,
-			amenities: amenitiesVal,
-			budget: budgetVal,
-		});
-	};
-	console.log(durationVal, bedVal, bathVal, amenitiesVal, budgetVal);
+	const [state, dispatch] = useContext(AppContext);
 
-	const duration = [
-		{ name: "Day", value: "Day" },
-		{ name: "Month", value: "Donth" },
-		{ name: "Year", value: "Year" },
-	];
-	const bed = [
-		{ name: "1", value: "1" },
-		{ name: "2", value: "2" },
-		{ name: "3", value: "3" },
-		{ name: "4", value: "4" },
-		{ name: "5+", value: "5" },
-	];
+	// const startFind = () => {
+	// 	props.SearchRoom({
+	// 		duration: durationVal,
+	// 		date: dateVal,
+	// 		bedroom: bedVal,
+	// 		bathroom: bathVal,
+	// 		amenities: amenitiesVal,
+	// 		budget: budgetVal,
+	// 	});
+	// };
+		console.log(durationVal,dateVal, bedVal, bathVal, amenitiesVal, budgetVal);
 
-	const bath = [
-		{ name: "1", value: "1" },
-		{ name: "2", value: "2" },
-		{ name: "3", value: "3" },
-		{ name: "4", value: "4" },
-		{ name: "5+", value: "5" },
-	];
+	const Toast = Swal.mixin({
+		toast: true,
+		position: "top-end",
+		showConfirmButton: false,
+		timer: 2000,
+		timerProgressBar: true,
+		didOpen: (toast) => {
+			toast.addEventListener("mouseenter", Swal.stopTimer);
+			toast.addEventListener("mouseleave", Swal.resumeTimer);
+		},
+	});
 
-	const amenities = [
-		{ value: "Furnished" },
-		{ value: "Pet Allowed" },
-		{ value: "Shared Accomodation" },
-	];
+	const handleSubmit = useMutation(async (e) => {
+			try {
+				e.preventDefault();
+
+				// Configuration
+				const config = {
+					headers: {
+						"Content-type": "application/json",
+					},
+				};
+
+				// Data body
+				// const body = JSON.stringify(form);
+
+				// Insert data for login process
+				const response = await API.get("/multiFilter?typeRent=" + durationVal + "&price=" + budgetVal + "&bedroom=" + bedVal + "&bathroom=" + bathVal +'&amenities=["' +
+				amenitiesVal.join('","') +
+				'"]' + "&date=" + dateVal, config);
+
+				// Checking process
+				if (response.data.data != null) {
+					// Send data to useContext
+					dispatch({
+						type: "FILTER",
+						status: state.isLogin,
+						isUser: state.user,
+						payload: response.data.data,
+					});
+					console.log("filter", response.data.data)
+				}
+			} catch (error) {
+				Toast.fire({
+					icon: "error",
+					title: "Property not found",
+				});
+				console.log(error);
+			}
+	});
+		
 
 	return (
 		<>
@@ -104,6 +136,7 @@ export default function Sidebar(props) {
 									<Form.Control
 										type='date'
 										aria-label='Small'
+										value={dateVal}
 										aria-describedby='inputGroup-sizing-sm'
 										onChange={(e) => setDate(e.target.value)}
 									/>
@@ -182,8 +215,19 @@ export default function Sidebar(props) {
 											type='checkbox'
 											value={amenities.value}
 											id={`amenities-${idk}`}
-											// checked={amenitiesVal === amenities.name}
-											onChange={(e) => setAmenities(e.target.value)}
+											checked={amenitiesVal.includes(amenities.value)}
+											onChange={(e) => {
+												if (e.target.checked) {
+													setAmenities((prevState) => [
+													...prevState,
+													e.target.value,
+												]);
+												} else {
+													setAmenities((prevState) =>
+													prevState.filter((a) => a !== e.target.value)
+												);
+												}
+												}}
 										/>
 									</div>
 								))}
@@ -220,7 +264,7 @@ export default function Sidebar(props) {
 								size='lg'
 								type='button'
 								className='px-4'
-								onClick={startFind}
+								onClick={(e) => handleSubmit.mutate(e)} 
 							>
 								Apply
 							</Button>

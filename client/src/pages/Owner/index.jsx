@@ -1,18 +1,43 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Table } from "react-bootstrap";
 import { RxMagnifyingGlass } from "react-icons/rx";
 
 import Layout from "layouts/withoutSearchbar";
 import VerifyModal from "components/Modals/VerifyTransaction";
 import css from "./index.module.css";
+import { useQuery } from "react-query";
+import { API } from "lib/api";
 
 export default function Home() {
 	const [verifyModal, setVerifyModal] = useState(false);
-	const Book = JSON.parse(localStorage.getItem("BookingData"));
-	let id;
+	const [transId, setTransId] = useState(0);
+	let { data: Transaction } = useQuery("getOwnerAllTransactionCache", async () => {
+		const response = await API.get("/allTransaction");
+		return response.data.data;
+	});
 
-	const title = "Dashboard Owner";
-	document.title = "Housy | " + title;
+	console.log("newnew", Transaction)
+
+
+	const handleAction = (id) => {
+		setVerifyModal(true);
+		setTransId(id);
+		
+	};
+	useEffect(() => {
+		console.log('transId changed', transId);
+		// Lakukan apa yang ingin Anda lakukan ketika transId berubah di sini
+		
+	
+	}, [transId]);
+	let { data: oneTransaction } = useQuery("getOneTransactionCache", async () => {
+		const response = await API.get("/getTransaction/" + String(transId));
+		return response.data.data;
+	});
+	
+
+	console.log("allTrans", oneTransaction)
+	
 	return (
 		<Layout className={"bg-tertiary"}>
 			<div className={css.MaxWidth}>
@@ -24,35 +49,32 @@ export default function Home() {
 								<th>No</th>
 								<th>Users</th>
 								<th>Type of Rent</th>
-								<th>Bukti Transfer</th>
 								<th>Status Payment</th>
 								<th>Action</th>
 							</tr>
 						</thead>
 						<tbody>
-							{Book ? (
+							{Transaction ? (
 								<>
-									{Book.map((b, i) => {
-										id = i;
+									{Transaction?.map((b, i) => {
 										return (
 											<tr key={i}>
 												<td>{i + 1}</td>
-												<td>{b.fullname}</td>
-												<td>{b.TOR}</td>
-												<td>bni.jpg</td>
-												{b.status === "Pending" ? (
-													<td className={css.TextWarning}>Pending</td>
+												<td>{b.user.fullname}</td>
+												<td>{b.property.type_rent}</td>
+												{b.status === "pending" || b.status === "waiting payment" ? (
+													<td className={css.TextWarning}>{b.status}</td>
 												) : (
 													<>
-														{b.status === "Approved" ? (
-															<td className={css.TextSuccess}>Approved</td>
+														{b.status === "success" ? (
+															<td className={css.TextSuccess}>Success</td>
 														) : (
-															<td className={css.TextDanger}>Cancel</td>
+															<td className={css.TextDanger}>Failed</td>
 														)}
 													</>
 												)}
 												<td>
-													<span onClick={() => setVerifyModal(true)}>
+													<span onClick={() => handleAction(b.id)}>
 														<RxMagnifyingGlass className={css.IconButton} />
 													</span>
 												</td>
@@ -60,7 +82,7 @@ export default function Home() {
 										);
 									})}
 									<VerifyModal
-										TransactionID={id}
+										transaction={oneTransaction}
 										show={verifyModal}
 										onHide={() => setVerifyModal(false)}
 									/>

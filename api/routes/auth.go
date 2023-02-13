@@ -3,14 +3,14 @@ package routes
 import (
 	"housy/handlers"
 	"housy/pkg/middleware"
-	"housy/pkg/sql"
+	"housy/pkg/mysql"
 	"housy/repositories"
 
 	"github.com/gorilla/mux"
 )
 
 func AuthRoutes(r *mux.Router) {
-	userRepository := repositories.RepositoryUser(sql.DB)
+	userRepository := repositories.RepositoryUser(mysql.DB)
 	h := handlers.HandlerAuth(userRepository)
 
 	r.HandleFunc("/register", h.Register).Methods("POST")

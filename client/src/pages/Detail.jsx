@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useQuery, useMutation } from "react-query";
+import { useQuery } from "react-query";
 import { Image, Button } from "react-bootstrap";
 import { IoBed } from "react-icons/io5";
 import { GiBathtub } from "react-icons/gi";
@@ -12,14 +12,18 @@ import css from "./Detail.module.css";
 
 import Layout from "layouts/withoutSearchbar";
 import OrderModal from "components/Modals/Detail";
-
-// import { DateToMillis } from "lib/dateConvertion";
+import LoginModal from "components/Modals/Login";
+import RegisterModal from "components/Modals/Register";
+// import { AppContext } from "context/AppContext";
 
 export default function Detail(props) {
-	const [state, dispatch] = useContext(AppContext);
 	const [showModal, setShowModal] = useState(false);
-	const navigate = useNavigate();
+	const [loginModal, setLoginModal] = useState(false);
+	const [registerModal, setRegisterModal] = useState(false);
+
 	const { id } = useParams();
+	const redirect = useNavigate();
+	const [state, dispatch] = useContext(AppContext);
 
 	let { data: property } = useQuery("detailPropertyCache", async () => {
 		const response = await API.get("/property/" + id);
@@ -40,12 +44,11 @@ export default function Detail(props) {
 				title:
 					"You have an unpaid order, please pay in advance before placing another order!",
 			});
-			navigate("/mybooking");
+			redirect("/mybooking");
 		}
 	};
 
-	const title = "Detail Property";
-	document.title = "Housy | " + title;
+	console.log("data showed", property);
 
 	return (
 		<Layout className={"bg-white"}>
@@ -114,23 +117,43 @@ export default function Detail(props) {
 						<p className='text-secondary'>{property?.description}</p>
 					</div>
 					<div className='d-flex w-100 justify-content-end'>
-						<Button
-							size='lg'
-							variant='primary'
-							className='px-5 py-2'
-							onClick={handleBooking}
-							// onClick={() => setRegisterModal(true)}
-						>
-							BOOK NOW
-						</Button>
+						{state.isLogin === true ? (
+							<Button
+								size='lg'
+								variant='primary'
+								className='px-5 py-2'
+								onClick={handleBooking}
+								// onClick={() => setRegisterModal(true)}
+							>
+								BOOK NOW
+							</Button>
+						) : (
+							<Button
+								className='px-5 py-3 fs-5 fw-bold'
+								onClick={() => setLoginModal(true)}
+							>
+								BOOK NOW
+							</Button>
+						)}
 					</div>
 					{/* <Link to='/'>back to home</Link> */}
 				</div>
+
 				<OrderModal
 					show={showModal}
 					// property={dataProperty}
 					// gotoregister={gotoRegistration}
 					onHide={() => setShowModal(false)}
+				/>
+				<LoginModal
+					show={loginModal}
+					toRegister={() => setRegisterModal(true)}
+					onHide={() => setLoginModal(false)}
+				/>
+				<RegisterModal
+					show={registerModal}
+					toLogin={() => setLoginModal(true)}
+					onHide={() => setRegisterModal(false)}
 				/>
 			</div>
 		</Layout>

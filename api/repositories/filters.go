@@ -5,6 +5,7 @@ import (
 	"housy/models"
 	"net/url"
 	"strconv"
+	// "time"
 
 	// "strconv"
 
@@ -21,7 +22,7 @@ func RepositoryFilter(db *gorm.DB) *repository {
 	return &repository{db}
 }
 
-func (r *repository) FindCity()([]models.City, error){
+func (r *repository) FindCity() ([]models.City, error) {
 	var cities []models.City
 	err := r.db.Find(&cities).Error
 
@@ -39,13 +40,14 @@ func (r *repository) MultiParameter(params url.Values) ([]models.Property, error
 	var properties []models.Property
 
 	typeRent := params.Get("typeRent")
-	price, _ := strconv.ParseFloat(params.Get("price"), 64) 
+	price, _ := strconv.ParseFloat(params.Get("price"), 64)
 	bedroom, _ := strconv.Atoi(params.Get("bedroom"))
 	bathroom, _ := strconv.Atoi(params.Get("bathroom"))
 	amenities := params.Get("amenities")
-
-
-	err := r.db.Where("type_rent = ? AND price < ? AND bedroom = ? AND bathroom = ? AND amenities = ?", typeRent, price, bedroom, bathroom, amenities).Preload("City").Find(&properties).Error
+	// date, _ := time.Parse("2006-01-02",params.Get("date"))
+	date := params.Get("date")
+	
+	err := r.db.Where("type_rent = ? AND price < ? AND bedroom = ? AND bathroom = ? AND amenities = ? AND created_at LIKE ?", typeRent, price, bedroom, bathroom, amenities, "%"+date+"%").Preload("City").Find(&properties).Error
 
 	return properties, err
 }

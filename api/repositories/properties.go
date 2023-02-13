@@ -20,7 +20,7 @@ func RepositoryProperty(db *gorm.DB) *repository {
 
 func (r *repository) FindProperties() ([]models.Property, error) {
 	var properties []models.Property
-	err := r.db.Preload("City").Find(&properties).Error
+	err := r.db.Preload("City").Where("status = 'avaible'").Find(&properties).Error
 
 	return properties, err
 }
@@ -44,7 +44,7 @@ func (r *repository) DeleteProperty(property models.Property) (models.Property, 
 	return property, err
 }
 
-func (r *repository) FindCities() ([]models.City, error) {
+func (r *repository) FindCities()([]models.City, error){
 	var cities []models.City
 	err := r.db.Find(&cities).Error
 

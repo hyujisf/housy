@@ -8,7 +8,7 @@ import (
 	"housy/repositories"
 	"net/http"
 
-	"github.com/golang-jwt/jwt/v4"
+	// "github.com/golang-jwt/jwt/v4"
 )
 
 type handlerFilter struct {
@@ -23,15 +23,15 @@ func (h *handlerFilter) SingleParameter(w http.ResponseWriter, r *http.Request) 
 	w.Header().Set("Content-Type", "application/json")
 
 	// get data user token
-	userInfo := r.Context().Value("userInfo").(jwt.MapClaims)
-	userRole := int(userInfo["list_as_id"].(float64))
+	// userInfo := r.Context().Value("userInfo").(jwt.MapClaims)
+	// userRole := int(userInfo["list_as_id"].(float64))
 
-	if userRole != 2 {
-		w.WriteHeader(http.StatusUnauthorized)
-		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: "unauthorized as Tenant"}
-		json.NewEncoder(w).Encode(response)
-		return
-	}
+	// if userRole != 2 {
+	// 	w.WriteHeader(http.StatusUnauthorized)
+	// 	response := dto.ErrorResult{Code: http.StatusBadRequest, Message: "unauthorized as Tenant"}
+	// 	json.NewEncoder(w).Encode(response)
+	// 	return
+	// }
 
 	singleParams := r.URL.Query().Get("city")
 
@@ -73,15 +73,15 @@ func (h *handlerFilter) MultiParameter(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	// get data user token
-	userInfo := r.Context().Value("userInfo").(jwt.MapClaims)
-	userRole := int(userInfo["list_as_id"].(float64))
+	// userInfo := r.Context().Value("userInfo").(jwt.MapClaims)
+	// userRole := int(userInfo["list_as_id"].(float64))
 
-	if userRole != 2 {
-		w.WriteHeader(http.StatusUnauthorized)
-		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: "unauthorized as Tenant"}
-		json.NewEncoder(w).Encode(response)
-		return
-	}
+	// if userRole != 2 {
+	// 	w.WriteHeader(http.StatusUnauthorized)
+	// 	response := dto.ErrorResult{Code: http.StatusBadRequest, Message: "unauthorized as Tenant"}
+	// 	json.NewEncoder(w).Encode(response)
+	// 	return
+	// }
 
 	params := r.URL.Query()
 
@@ -91,6 +91,7 @@ func (h *handlerFilter) MultiParameter(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(err.Error())
 		return
 	}
+	
 
 	w.WriteHeader(http.StatusOK)
 	response := dto.SuccessResult{Code: http.StatusOK, Data: houses}

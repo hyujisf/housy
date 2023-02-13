@@ -1,15 +1,18 @@
 import React, { useState } from "react";
 import Layout from "layouts/withoutSearchbar";
 import { Form, Col, Button } from "react-bootstrap";
+import Swal from "sweetalert2";
 
-import { useMutation, useQuery } from "react-query";
+import { useMutation } from "react-query";
 import { API } from "lib/api";
+import { period, amenities, nums } from "data/AddProperty";
+import { useQuery } from "react-query";
 
 import css from "./PropertyAdd.module.css";
-import Toast from "lib/sweetAlerts";
-import { period, amenities, nums } from "data/AddProperty";
+import { useNavigate } from "react-router-dom";
 
 export default function AddProperty() {
+	const redirect = useNavigate();
 	//Store all category data
 	const [preview, setPreview] = useState(null);
 	const [form, setForm] = useState({
@@ -32,21 +35,34 @@ export default function AddProperty() {
 		return response.data.data;
 	});
 
+
+	const Toast = Swal.mixin({
+		toast: true,
+		position: "top-end",
+		showConfirmButton: false,
+		timer: 3000,
+		timerProgressBar: true,
+		didOpen: (toast) => {
+			toast.addEventListener("mouseenter", Swal.stopTimer);
+			toast.addEventListener("mouseleave", Swal.resumeTimer);
+		},
+	});
+
 	// For handle if category selected
 	const handleAmenities = (e) => {
-		const { value, type, checked } = e.target;
+		const value = e.target.value;
+		const checked = e.target.checked;
 
-		if (type === "checkbox") {
-			let setAmenities = [...form.amenities];
-			// Case 1 : The user checks the box
-			if (checked) {
-				setAmenities.push(value);
-			}
-			setForm({ ...form, amenities: setAmenities });
+		console.log(`${value} is ${checked}`);
+
+		let setAmenities = [...form.amenities];
+		// Case 1 : The user checks the box
+		if (checked) {
+			setAmenities.push(value);
 		}
+		setForm({ ...form, amenities: setAmenities });
 	};
 	// Handle change data on form
-
 	const handleChange = (e) => {
 		setForm({
 			...form,
@@ -70,6 +86,7 @@ export default function AddProperty() {
 					"Content-type": "multipart/form-data",
 				},
 			};
+			console.log("property data", form);
 			const formData = new FormData();
 			formData.append("name", form.name);
 			formData.append("image", form.image[0], form.image[0].name);
@@ -85,17 +102,33 @@ export default function AddProperty() {
 			formData.append("description", form.description);
 			formData.append("size", form.size);
 
-			await API.post("/property", formData, config);
+			const response = await API.post("/property", formData, config);
 
+			console.log("Property success to add", response);
+			
+			setForm({
+				name: "",
+				city_id: "",
+				address: "",
+				district: "",
+				price: "",
+				type_rent: "",
+				amenities: [],
+				bedroom: "",
+				bathroom: "",
+				description: "",
+				size: "",
+				image: "",
+			});
 			Toast.fire({
 				icon: "success",
 				title: "Property baru telah berhasil ditambahkan",
 			});
-
-			setPreview(null);
-			e.target.reset();
+			redirect("/");
+			
 		} catch (err) {
-			// console.log(err);
+			console.log("Fail to add Property", err);
+			// console.log(form.amenities);
 
 			Toast.fire({
 				icon: "error",
@@ -148,42 +181,6 @@ export default function AddProperty() {
 							/>
 						</Form.Group>
 						<Form.Group className='mb-3'>
-							<Form.Label>Size</Form.Label>
-							<Form.Control
-								className='bg-tertiary'
-								size='lg'
-								id='size'
-								name='size'
-								type='text'
-								onChange={handleChange}
-								placeholder='size in sqft'
-							/>
-						</Form.Group>
-						<Form.Group className='mb-3'>
-							<Form.Label>Address</Form.Label>
-							<Form.Control
-								className='bg-tertiary'
-								size='lg'
-								as='textarea'
-								rows={3}
-								type='text'
-								id='address'
-								name='address'
-								onChange={handleChange}
-							/>
-						</Form.Group>
-						<Form.Group className='mb-3'>
-							<Form.Label>District</Form.Label>
-							<Form.Control
-								className='bg-tertiary'
-								size='lg'
-								id='district'
-								name='district'
-								type='text'
-								onChange={handleChange}
-							/>
-						</Form.Group>
-						<Form.Group className='mb-3'>
 							<Form.Label>City</Form.Label>
 							<Form.Select
 								className='bg-tertiary'
@@ -202,6 +199,19 @@ export default function AddProperty() {
 									);
 								})}
 							</Form.Select>
+						</Form.Group>
+						<Form.Group className='mb-3'>
+							<Form.Label>Address</Form.Label>
+							<Form.Control
+								className='bg-tertiary'
+								size='lg'
+								as='textarea'
+								rows={3}
+								type='text'
+								id='address'
+								name='address'
+								onChange={handleChange}
+							/>
 						</Form.Group>
 						<Form.Group className='mb-3'>
 							<Form.Label>Price</Form.Label>
@@ -294,8 +304,32 @@ export default function AddProperty() {
 								})}
 							</Form.Select>
 						</Form.Group>
+
 						<Form.Group className='mb-3'>
-							<Form.Label>description</Form.Label>
+							<Form.Label>Size</Form.Label>
+							<Form.Control
+								className='bg-tertiary'
+								size='lg'
+								id='size'
+								name='size'
+								type='text'
+								onChange={handleChange}
+								placeholder='size in sqft'
+							/>
+						</Form.Group>
+						<Form.Group className='mb-3'>
+							<Form.Label>District</Form.Label>
+							<Form.Control
+								className='bg-tertiary'
+								size='lg'
+								id='district'
+								name='district'
+								type='text'
+								onChange={handleChange}
+							/>
+						</Form.Group>
+						<Form.Group className='mb-3'>
+							<Form.Label>Description</Form.Label>
 							<Form.Control
 								className='bg-tertiary'
 								size='lg'

@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"housy/database"
-	"housy/pkg/sql"
+	"housy/pkg/mysql"
 	"housy/routes"
 	"log"
 	"net/http"
@@ -22,19 +22,19 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	DB_HOST := os.Getenv("DB_HOST")
-	PORT := os.Getenv("PORT")
-	API_VERSION := os.Getenv("API_VERSION")
+	SERVER_NAME := os.Getenv("SERVER_NAME")
+	PORT := os.Getenv("SERVER_PORT")
+	VERSION := os.Getenv("API_VERSION")
 
 	// Database
-	sql.DatabaseInit()
+	mysql.DatabaseInit()
 
 	// Migration
 	database.RunMigration()
 
 	r := mux.NewRouter()
 
-	routes.RouteInit(r.PathPrefix("/api/" + API_VERSION).Subrouter())
+	routes.RouteInit(r.PathPrefix("/api/" + VERSION).Subrouter())
 
 	// Initialization "uploads" folder to public here ...
 	r.PathPrefix("/uploads").Handler(http.StripPrefix("/uploads/", http.FileServer(http.Dir("./uploads"))))
@@ -45,6 +45,6 @@ func main() {
 	var AllowedOrigins = handlers.AllowedOrigins([]string{"*"})
 
 	// Embed the setup allowed in 2 parameter on this below code ...
-	fmt.Println("Server is running on http://" + DB_HOST + ":" + PORT + "/api/" + API_VERSION)
-	http.ListenAndServe(":"+PORT, handlers.CORS(AllowedHeaders, AllowedMethods, AllowedOrigins)(r))
+	fmt.Println("Server is running on http://" + SERVER_NAME + ":" + PORT + "/api/" + VERSION)
+	http.ListenAndServe(SERVER_NAME+":"+PORT, handlers.CORS(AllowedHeaders, AllowedMethods, AllowedOrigins)(r))
 }

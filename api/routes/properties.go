@@ -3,14 +3,14 @@ package routes
 import (
 	"housy/handlers"
 	"housy/pkg/middleware"
-	"housy/pkg/sql"
+	"housy/pkg/mysql"
 	"housy/repositories"
 
 	"github.com/gorilla/mux"
 )
 
 func PropertyRoutes(r *mux.Router) {
-	propertyRepository := repositories.RepositoryProperty(sql.DB)
+	propertyRepository := repositories.RepositoryProperty(mysql.DB)
 	h := handlers.HandlerProperty(propertyRepository)
 
 	// sementara

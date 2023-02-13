@@ -3,11 +3,11 @@ package database
 import (
 	"fmt"
 	"housy/models"
-	"housy/pkg/sql"
+	"housy/pkg/mysql"
 )
 
 func RunMigration() {
-	err := sql.DB.AutoMigrate(
+	err := mysql.DB.AutoMigrate(
 		&models.User{},
 		&models.Property{},
 		&models.City{},

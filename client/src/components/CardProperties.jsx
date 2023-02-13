@@ -1,24 +1,61 @@
+import React, { useContext, useState } from "react";
 import { Card, Image } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { API } from "lib/api";
 // import axios from "axios";
 import { useQuery } from "react-query";
+import { AppContext } from "context/AppContext";
 
 import { toCurrency } from "lib/Currency";
 import css from "./CardProperties.module.css";
 
 export default function CardProperties(props) {
-	let { data: properties } = useQuery("propertiesCache", async () => {
+
+	const [state, dispatch] = useContext(AppContext);
+
+	// if (props.searchCity === true){
+
+	// }
+
+	let { data: allProperty } = useQuery("propertiesCache", async () => {
 		const response = await API.get("/properties");
 		return response.data.data;
 	});
 
+	let properties = state.city;
+	console.log("city", properties)
+	if (properties === undefined){
+		if (state.filter === undefined){
+			properties = allProperty;
+			console.log("all", properties)
+		}else{
+			properties = state.filter;
+			console.log("filter", properties)
+		}
+	}
+
 	console.log("data showed", properties);
 	return (
 		<>
+		{properties === undefined || properties.length === 0 ? (
+			<div
+				className='d-flex align-items-center justify-content-center'
+				style={{ minHeight: "90vh"}}
+			>
+				<div className='text-center bg-white rounded-4 p-5 shadow'>
+					<h2>Property Tidak Ditemukan</h2>
+					{/* <p>Silahkan lakukan checkin terlebih dahulu</p>
+					<Link to='/' className='btn btn-primary px-4 py-2 mt-2'>
+						Kembali
+					</Link> */}
+				</div>
+			</div>
+		) : (
+			<>
 			{properties?.map((room, k) => {
 				return (
 					<Link
+					
 						to={"/detail/" + room.id}
 						key={k}
 						className='w-100'
@@ -38,7 +75,7 @@ export default function CardProperties(props) {
 									className={css.PrimaryImage}
 									src={
 										// "https://3408-2404-8000-1004-b94f-71a6-be6-bec4-1ca1.ap.ngrok.io/uploads/"
-										room.image
+										"http://localhost:5000/uploads/" + room.image
 									}
 								/>
 							</div>
@@ -59,7 +96,10 @@ export default function CardProperties(props) {
 						</Card>
 					</Link>
 				);
+				
 			})}
+			</>
+		)}
 		</>
 	);
 }

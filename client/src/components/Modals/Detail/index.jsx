@@ -1,17 +1,18 @@
 import React, { useState, useContext } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { Modal, Button, Form } from "react-bootstrap";
-import { useMutation, useQuery } from "react-query";
-import { AppContext } from "context/AppContext";
+// import moment from "moment";
+import { useNavigate } from "react-router-dom";
+import { Alert, Modal, Button, Form } from "react-bootstrap";
+import Swal from "sweetalert2";
+import { useMutation } from "react-query";
 import { API } from "lib/api";
+import { AppContext } from "context/AppContext";
+import { useQuery } from "react-query";
+import { useParams } from "react-router-dom";
 
-import moment from "moment";
-import Toast from "lib/sweetAlerts";
 import css from "./index.module.css";
+import moment from "moment";
 
 const OrderModal = (props) => {
-	const navigate = useNavigate();
-
 	const [state, dispatch] = useContext(AppContext);
 	const { id } = useParams();
 
@@ -20,21 +21,39 @@ const OrderModal = (props) => {
 		return response.data.data;
 	});
 
-	const [checkin, setCheckin] = useState(moment().format("YYYY-MM-DD"));
-	const [checkout, setCheckout] = useState(
-		moment().add(1, property?.type_rent).format("YYYY-MM-DD")
-	);
+	const redirect = useNavigate();
+	const [message, setMessage] = useState(null);
+	const [checkin, setCheckin] = useState(moment().format('YYYY-MM-DD'));
+	const [checkout, setCheckout] = useState(moment().add(1, property?.type_rent).format('YYYY-MM-DD'));
+
+	console.log("property",property)
+	// const {
+	// 	checkin,
+	// 	checkout,
+	// } = form;
+
+	const Toast = Swal.mixin({
+		toast: true,
+		position: "top-end",
+		showConfirmButton: false,
+		timer: 2000,
+		timerProgressBar: true,
+		didOpen: (toast) => {
+			toast.addEventListener("mouseenter", Swal.stopTimer);
+			toast.addEventListener("mouseleave", Swal.resumeTimer);
+		},
+	});
 
 	const handleChange = (e) => {
 		setCheckin(e.target.value);
-		// let checkoutToMilis
-		if (property?.type_rent === "Year") {
-			setCheckout(moment(e.target.value).add(1, "year").format("YYYY-MM-DD"));
-		} else if (property?.type_rent === "Month") {
-			setCheckout(moment(e.target.value).add(1, "month").format("YYYY-MM-DD"));
-		} else if (property?.type_rent === "Day") {
-			setCheckout(moment(e.target.value).add(1, "day").format("YYYY-MM-DD"));
-		}
+		// let checkoutToMilis 
+		if (property?.type_rent === "Year"){
+			setCheckout(moment(e.target.value).add(1, 'year').format('YYYY-MM-DD'));
+		} else if (property?.type_rent === "Month"){
+			setCheckout(moment(e.target.value).add(1, 'month').format('YYYY-MM-DD'));
+		} else if (property?.type_rent === "Day"){
+			setCheckout(moment(e.target.value).add(1, 'day').format('YYYY-MM-DD'));
+		} 
 	};
 
 	// const checkinFormat = moment(checkin).valueOf()
@@ -74,23 +93,31 @@ const OrderModal = (props) => {
 				// 	checkout: "",
 				// });
 				props.onHide();
-				navigate("/mybooking");
+				redirect("/mybooking");
 
 				Toast.fire({
 					icon: "success",
-					title: "Transaction Success!!!",
+					title: "Successfully Add Transaction",
 				});
 			} else {
-				Toast.fire({
-					icon: "error",
-					title: "Transaction Failed!!!",
-				});
+				const alert = (
+					<Alert variant='danger' className='py-1'>
+						Transaction Failed!!!!
+					</Alert>
+				);
+				setMessage(alert);
 			}
 		} catch (error) {
 			Toast.fire({
 				icon: "error",
-				title: "Transaction Failed!!!",
+				title: "Failed to Add Transaction",
 			});
+			const alert = (
+				<Alert variant='danger' className='py-1'>
+					Transaction Failed!!!
+				</Alert>
+			);
+			setMessage(alert);
 			console.log(error);
 		}
 	});
@@ -116,7 +143,7 @@ const OrderModal = (props) => {
 							name='checkin'
 							value={checkin}
 							onChange={handleChange}
-							min={moment().format("YYYY-MM-DD")}
+							min={moment().format('YYYY-MM-DD')}
 						/>
 					</Form.Group>
 					{/* <Form.Group className='mb-3'>
@@ -135,13 +162,8 @@ const OrderModal = (props) => {
 							// onChange={handleChange}
 						/>
 					</Form.Group> */}
-					<h6 className=''>Checkout Date : </h6>
-					<span
-						style={{ fontSize: ".7rem" }}
-						className='py-2 px-3 rounded-pill bg-secondary text-white fw-bold'
-					>
-						{moment(checkout).format("dddd, DD MMMM YYYY")}
-					</span>
+					<h6 className="">Checkout Date : </h6>
+					<span style={{fontSize:".7rem" }} className="py-2 px-3 rounded-pill bg-secondary text-white fw-bold">{moment(checkout).format("dddd, DD MMMM YYYY")}</span>
 
 					<Form.Group className='ms-auto mb-4'>
 						<Button

@@ -1,28 +1,87 @@
 import React, { useState } from "react";
 import { Button, Modal, Form } from "react-bootstrap";
+import Swal from "sweetalert2";
+import { useMutation } from "react-query";
+import { API } from "lib/api";
+import { useNavigate } from "react-router-dom";
 // import RegisterModal from "../Register";
 
 import css from "./ChangePassword.module.css";
 
 const ChangePasswordModal = (props) => {
+	let navigate = useNavigate();
 	const [message, setMessage] = useState(null);
 	const [type, setType] = useState("password");
 	const [form, setForm] = useState({
-		oldpassword: "",
-		username: "",
-		email: "",
-		password: "",
-		list_as_id: "",
-		gender: "",
-		phone: "",
-		address: "",
+		old_password: "",
+		confirm_new_password: "",
 	});
 
-	const showHide = (e) => {
-		e.preventDefault();
-		e.stopPropagation();
-		setType(type === "input" ? "password" : "input");
+	const { old_password, confirm_new_password } = form;
+
+	// const showHide = (e) => {
+	// 	e.preventDefault();
+	// 	e.stopPropagation();
+	// 	setType(type === "input" ? "password" : "input");
+	// };
+
+	const handleChange = (e) => {
+		setForm({
+			...form,
+			[e.target.name]: e.target.value,
+		});
 	};
+
+	const Toast = Swal.mixin({
+		toast: true,
+		position: "top-end",
+		showConfirmButton: false,
+		timer: 2000,
+		timerProgressBar: true,
+		didOpen: (toast) => {
+			toast.addEventListener("mouseenter", Swal.stopTimer);
+			toast.addEventListener("mouseleave", Swal.resumeTimer);
+		},
+	});
+
+	const handleSubmit = useMutation(async (e) => {
+		try {
+			e.preventDefault();
+
+			// Configuration
+			const config = {
+				headers: {
+					"Content-type": "application/json",
+				},
+			};
+
+			// Data body
+			const body = JSON.stringify(form);
+
+			// Insert data for login process
+			const response = await API.patch("/user/changePassword", body, config);
+
+			// Checking process
+			if (response.data != null) {
+				// Send data to useContext
+				setForm(null);
+				navigate("/");
+				props.onHide();
+				Toast.fire({
+					icon: "success",
+					title: response.data.data.message,
+				});
+			}
+		} catch (error) {
+			
+			console.log(error);
+
+			Toast.fire({
+				icon: "error",
+				title: "Failed to Change Password",
+			});
+		}
+	});
 
 	// const [isLogin, setIsLogin] = useState({});
 
@@ -85,8 +144,8 @@ const ChangePasswordModal = (props) => {
 							placeholder='Type your Old Password'
 							// value={user.password}
 							className='bg-tertiary'
-							value={passwordOld}
-							name='passwordOld'
+							value={old_password}
+							name='old_password'
 							onChange={handleChange}
 						/>
 					</Form.Group>
@@ -115,19 +174,19 @@ const ChangePasswordModal = (props) => {
 							id='Password2'
 							placeholder='Confirm Your New Password'
 							className='bg-tertiary'
-							value={passwordConfirm}
-							name='passwordConfirm'
+							value={confirm_new_password}
+							name='confirm_new_password'
 							onChange={handleChange}
 						/>
 					</Form.Group>
-					<div className='w-100'>
+					{/* <div className='w-100'>
 						<span
 							className={type === "input" ? css.HidePassword : css.PeekPassword}
 							onClick={showHide}
 						>
 							{type === "input" ? "Hide Password" : "Show Password"}
 						</span>
-					</div>
+					</div> */}
 					<Form.Group className='ms-auto mb-4'>
 						<Button
 							size='lg'

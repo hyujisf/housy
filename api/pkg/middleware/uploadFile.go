@@ -5,10 +5,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	dto "housy/dto/result"
-	"io"
 	"io/ioutil"
 	"net/http"
+	"os"
 )
 
 // Create UploadFile function here ...
@@ -20,55 +19,22 @@ func UploadFile(next http.HandlerFunc) http.HandlerFunc {
 		// the Header and the size of the file
 		file, _, err := r.FormFile("image")
 
-		if err != nil && r.Method == "PATCH" {
-			ctx := context.WithValue(r.Context(), "dataFile", "false")
-			next.ServeHTTP(w, r.WithContext(ctx))
-			return
-		}
-
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
-			json.NewEncoder(w).Encode(response)
+			fmt.Println(err)
+			json.NewEncoder(w).Encode("Error Retrieving the File")
 			return
 		}
 		defer file.Close()
-
-		buff := make([]byte, 512)
-		_, err = file.Read(buff)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()}
-			json.NewEncoder(w).Encode(response)
-			return
-		}
-
-		filetype := http.DetectContentType(buff)
-		if filetype != "image/jpeg" && filetype != "image/png" {
-			w.WriteHeader(http.StatusBadRequest)
-			response := dto.ErrorResult{Code: http.StatusBadRequest, Message: "The provided file format is not allowed. Please upload a JPEG or PNG image"}
-			json.NewEncoder(w).Encode(response)
-			return
-		}
-
-		_, err = file.Seek(0, io.SeekStart)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()}
-			json.NewEncoder(w).Encode(response)
-			return
-		}
-
 		// fmt.Printf("Uploaded File: %+v\n", handler.Filename)
 		// fmt.Printf("File Size: %+v\n", handler.Size)
 		// fmt.Printf("MIME Header: %+v\n", handler.Header)
-
-		// setup max-upload
-		const MAX_UPLOAD_SIZE = 10 << 20
+		const MAX_UPLOAD_SIZE = 10 << 20 // 10MB
+		// Parse our multipart form, 10 << 20 specifies a maximum
+		// upload of 10 MB files.
 		r.ParseMultipartForm(MAX_UPLOAD_SIZE)
 		if r.ContentLength > MAX_UPLOAD_SIZE {
 			w.WriteHeader(http.StatusBadRequest)
-			response := Result{Code: http.StatusBadRequest, Message: "Max size in 10mb"}
+			response := Result{Code: http.StatusBadRequest, Message: "Max sizes are 10MB"}
 			json.NewEncoder(w).Encode(response)
 			return
 		}
@@ -94,11 +60,19 @@ func UploadFile(next http.HandlerFunc) http.HandlerFunc {
 		// write this byte array to our temporary file
 		tempFile.Write(fileBytes)
 
+		var devStat = os.Getenv("DEV_STATUS")
 		data := tempFile.Name()
-		// filename := data[8:] // split uploads/
+		var ctx = r.Context()
 
-		// add filename to ctx
-		ctx := context.WithValue(r.Context(), "dataFile", data)
+		if devStat == "development" {
+			filename := data[8:] // split uploads/
+			// add filename to ctx
+			ctx = context.WithValue(r.Context(), "dataFile", filename)
+		} else {
+
+			// add filename to ctx
+			ctx = context.WithValue(r.Context(), "dataFile", data)
+		}
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

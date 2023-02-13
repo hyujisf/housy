@@ -1,8 +1,7 @@
 package handlers
 
 import (
-	"encoding/json"
-	"fmt"
+	"encoding/json"	
 	dto "housy/dto/result"
 	usersdto "housy/dto/users"
 	"housy/models"
@@ -45,8 +44,11 @@ func (h *handlerUser) GetUser(w http.ResponseWriter, r *http.Request) {
 func (h *handlerUser) ChangePassword(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	id, _ := strconv.Atoi(mux.Vars(r)["id"])
-	user, err := h.UserRepository.GetUser(id)
+	userInfo := r.Context().Value("userInfo").(jwt.MapClaims)
+	userId := int(userInfo["id"].(float64))
+
+
+	user, err := h.UserRepository.GetUser(userId)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
@@ -109,20 +111,19 @@ func (h *handlerUser) ChangePassword(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-func (h *handlerUser) ChangePhotoProfile(w http.ResponseWriter, r *http.Request) {
+func (h *handlerUser) ChangeImage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	// get data user token
-	userInfo := r.Context().Value("userInfo").(jwt.MapClaims)
-	userId := int(userInfo["id"].(float64))
+	// userInfo := r.Context().Value("userInfo").(jwt.MapClaims)
+	// userId := int(userInfo["id"].(float64))
 	
 
-	// id, _ := strconv.Atoi(mux.Vars(r)["id"])
-	user, err := h.UserRepository.GetUser(userId)
+	id, _ := strconv.Atoi(mux.Vars(r)["id"])
+	user, err := h.UserRepository.GetUser(id)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
-		fmt.Println("1")
 		json.NewEncoder(w).Encode(response)
 		return
 	}
@@ -134,7 +135,6 @@ func (h *handlerUser) ChangePhotoProfile(w http.ResponseWriter, r *http.Request)
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
-		fmt.Println("1")
 		json.NewEncoder(w).Encode(response)
 		return
 	}
@@ -162,7 +162,7 @@ func (h *handlerUser) ChangePhotoProfile(w http.ResponseWriter, r *http.Request)
 	}
 
 
-	data, err := h.UserRepository.ChangePhotoProfile(addData)
+	data, err := h.UserRepository.ChangeImage(addData)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()}

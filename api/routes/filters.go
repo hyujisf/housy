@@ -2,18 +2,19 @@ package routes
 
 import (
 	"housy/handlers"
-	"housy/pkg/middleware"
-	"housy/pkg/sql"
+	"housy/pkg/mysql"
 	"housy/repositories"
+
 
 	"github.com/gorilla/mux"
 )
 
 func FilterRoutes(r *mux.Router) {
-	filterRepository := repositories.RepositoryFilter(sql.DB)
+	filterRepository := repositories.RepositoryFilter(mysql.DB)
 	h := handlers.HandlerFilter(filterRepository)
 
-	r.HandleFunc("/singleFilter", middleware.Auth(h.SingleParameter)).Methods("GET")
-	r.HandleFunc("/multiFilter", middleware.Auth(h.MultiParameter)).Methods("GET")
+	r.HandleFunc("/singleFilter", h.SingleParameter).Methods("GET")
+	r.HandleFunc("/multiFilter", h.MultiParameter).Methods("GET")
 
+	
 }

@@ -16,5 +16,6 @@ type PropertyRequest struct {
 	Description string         `json:"description" form:"description" validate:"required"`
 	Size        int            `json:"size" form:"size" validate:"required"`
 	District    string         `json:"district" form:"district" validate:"required"`
-	Image       string         `json:"image" form:"image"`
+	Image       string         `json:"image" form:"image" validate:"required"`
+	Status      string         `json:"status"`
 }
