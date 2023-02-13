@@ -154,7 +154,7 @@ export default function Profile() {
 								<div className={css.WrapperCardImage}>
 									<Image
 										className={css.CardImage}
-										src={"http://localhost:5000/uploads/" + user?.image}
+										src={user?.image}
 									/>
 									{/* <Link to='/'>back to home</Link> */}
 								</div>

@@ -31,7 +31,6 @@ import {
 } from "react-bootstrap";
 import css from "./Navbar.module.css";
 
-
 if (localStorage.token) {
 	setAuthToken(localStorage.token);
 }
@@ -43,7 +42,7 @@ export default function Header(props) {
 	const [state, dispatch] = useContext(AppContext);
 	// const isLogin = JSON.parse(localStorage.getItem("isLogin"));
 	const profilImage = process.env.PUBLIC_URL + "/img/Profile/";
-	const [form, setForm] = useState({city: "",});
+	const [form, setForm] = useState({ city: "" });
 	const { city } = form;
 
 	const handleChange = (e) => {
@@ -53,7 +52,6 @@ export default function Header(props) {
 		});
 	};
 
-		
 	const Toast = Swal.mixin({
 		toast: true,
 		position: "top-end",
@@ -66,7 +64,7 @@ export default function Header(props) {
 		},
 	});
 
-	console.log("state", state)
+	console.log("state", state);
 	const handleSubmit = useMutation(async (e) => {
 		try {
 			e.preventDefault();
@@ -93,7 +91,7 @@ export default function Header(props) {
 					isUser: state.user,
 					payload: response.data.data,
 				});
-				console.log("city", state.city)
+				console.log("city", state.city);
 			}
 		} catch (error) {
 			Toast.fire({
@@ -134,7 +132,7 @@ export default function Header(props) {
 							<Form className='d-flex'>
 								<InputGroup className={css.InputGroup}>
 									<Form.Control
-									type="text"
+										type='text'
 										size='lg'
 										name='city'
 										id='city'
@@ -145,7 +143,10 @@ export default function Header(props) {
 										value={city}
 										onChange={handleChange}
 									/>
-									<Button onClick={(e) => handleSubmit.mutate(e)} variant='outline-primary border-0 border-start bg-tertiary'>
+									<Button
+										onClick={(e) => handleSubmit.mutate(e)}
+										variant='outline-primary border-0 border-start bg-tertiary'
+									>
 										<HiMagnifyingGlass fontSize={24} strokeWidth={2} />
 									</Button>
 								</InputGroup>
@@ -157,10 +158,7 @@ export default function Header(props) {
 							{state.isLogin === true ? (
 								<Dropdown className={css.Dropdown}>
 									<Dropdown.Toggle className={css.Toggle}>
-										<Image
-											className={css.ToggleImage}
-											src={"http://localhost:5000/uploads/" + state.user.image}
-										/>
+										<Image className={css.ToggleImage} src={state.user.image} />
 									</Dropdown.Toggle>
 
 									<Dropdown.Menu align='end' className={css.DropdownMenu}>
