@@ -44,19 +44,6 @@ export default function MyBooking() {
 
 	const handlePay = useMutation(async () => {
 		try {
-			// Get data from transaction
-			//   const data = {
-			// 	property_id: transaction?.property_id,
-			// 	checkin: moment(transaction?.checkin).format('YYYY-MM-DD'),
-			// 	checkout: moment(transaction?.checkout).format('YYYY-MM-DD'),
-			// 	status: "pending",
-			// 	total: transaction?.total,
-			// };
-
-			//   // Data body
-			//   const body = JSON.stringify(data);
-
-			//Configuration
 			const config = {
 				// method: "PATCH",
 				headers: {
@@ -70,9 +57,9 @@ export default function MyBooking() {
 				"/createMidtrans/" + transaction?.id,
 				config
 			);
-			console.log("midtrans response", response);
+			// console.log("midtrans response", response);
 			const token = response.data.data.token;
-			console.log("token", token);
+			// console.log("token", token);
 
 			window.snap.pay(token, {
 				onSuccess: function (result) {
