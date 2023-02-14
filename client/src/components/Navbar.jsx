@@ -8,6 +8,7 @@ import { FaRegUser, FaRegCalendar } from "react-icons/fa";
 import { TbHistory } from "react-icons/tb";
 import { IoLogOut } from "react-icons/io5";
 import { MdHomeWork } from "react-icons/md";
+import Swal from "sweetalert2";
 
 import { Image } from "react-bootstrap";
 
@@ -19,7 +20,7 @@ import logo from "assets/icons/Logo.svg";
 import RegisterModal from "components/Modals/Register";
 
 import { setAuthToken } from "lib/api";
-import Toast from "lib/sweetAlerts";
+
 import {
 	Navbar,
 	Nav,
@@ -29,6 +30,7 @@ import {
 	Dropdown,
 } from "react-bootstrap";
 import css from "./Navbar.module.css";
+
 if (localStorage.token) {
 	setAuthToken(localStorage.token);
 }
@@ -38,6 +40,8 @@ export default function Header(props) {
 	const [loginModal, setLoginModal] = useState(false);
 	const [registerModal, setRegisterModal] = useState(false);
 	const [state, dispatch] = useContext(AppContext);
+	// const isLogin = JSON.parse(localStorage.getItem("isLogin"));
+	const profilImage = process.env.PUBLIC_URL + "/img/Profile/";
 	const [form, setForm] = useState({ city: "" });
 	const { city } = form;
 
@@ -47,6 +51,18 @@ export default function Header(props) {
 			[e.target.name]: e.target.value,
 		});
 	};
+
+	const Toast = Swal.mixin({
+		toast: true,
+		position: "top-end",
+		showConfirmButton: false,
+		timer: 2000,
+		timerProgressBar: true,
+		didOpen: (toast) => {
+			toast.addEventListener("mouseenter", Swal.stopTimer);
+			toast.addEventListener("mouseleave", Swal.resumeTimer);
+		},
+	});
 
 	console.log("state", state);
 	const handleSubmit = useMutation(async (e) => {
@@ -142,11 +158,7 @@ export default function Header(props) {
 							{state.isLogin === true ? (
 								<Dropdown className={css.Dropdown}>
 									<Dropdown.Toggle className={css.Toggle}>
-										<Image
-											className={css.ToggleImage}
-											src={state.user.image}
-											alt={state.user.username + " Housy Profile Image"}
-										/>
+										<Image className={css.ToggleImage} src={state.user.image} />
 									</Dropdown.Toggle>
 
 									<Dropdown.Menu align='end' className={css.DropdownMenu}>

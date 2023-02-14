@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Image, Table, Modal, Button } from "react-bootstrap";
 import moment from "moment/moment";
 import { useQuery } from "react-query";
@@ -13,12 +13,16 @@ import css from "./index.module.css";
 
 export default function VerifyTransaction(props) {
 	
-	const oneTransaction = props.transaction;
-
+	
+	const [oneTransaction,setOneTransaction] = useState(null);
 	// let { data: oneTransaction } = useQuery("getOneTransactionCache", async () => {
 	// 	const response = await API.get("/getTransaction/" + id);
 	// 	return response.data.data;
 	// });
+
+	useEffect(() => {
+		setOneTransaction(props.transaction)
+	},[props.transaction]);
 
 	console.log("getTrannnnnnn", oneTransaction)
 

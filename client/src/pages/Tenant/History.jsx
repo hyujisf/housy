@@ -61,7 +61,7 @@ export default function History() {
 													{history.status === "success" ? (
 														<span className={css.BadgeSuccess} style={{textTransform: "capitalize"}}>success</span>
 													) : (
-														<span className={css.BadgeDanger} style={{textTransform: "capitalize"}}>failed</span>
+														<span className={css.BadgeError} style={{textTransform: "capitalize"}}>failed</span>
 													)}
 													</>
 												)}

@@ -3,8 +3,9 @@ import { Button, Modal, Form } from "react-bootstrap";
 import { AppContext } from "context/AppContext";
 import { useMutation } from "react-query";
 import { API } from "lib/api";
+import { Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import Toast from "lib/sweetAlerts";
+import Swal from "sweetalert2";
 // import { redirect } from "react-router-dom";
 // import RegisterModal from "../Register";
 
@@ -13,9 +14,22 @@ export default function LoginModal(props) {
 
 	const [state, dispatch] = useContext(AppContext);
 
+	const [message, setMessage] = useState(null);
 	const [form, setForm] = useState({
 		username: "",
 		password: "",
+	});
+
+	const Toast = Swal.mixin({
+		toast: true,
+		position: "top-end",
+		showConfirmButton: false,
+		timer: 2000,
+		timerProgressBar: true,
+		didOpen: (toast) => {
+			toast.addEventListener("mouseenter", Swal.stopTimer);
+			toast.addEventListener("mouseleave", Swal.resumeTimer);
+		},
 	});
 
 	const { username, password } = form;
@@ -59,6 +73,12 @@ export default function LoginModal(props) {
 				});
 			}
 		} catch (error) {
+			const alert = (
+				<Alert variant='danger' className='py-1'>
+					Login failed
+				</Alert>
+			);
+			setMessage(alert);
 			console.log(error);
 
 			Toast.fire({
@@ -70,7 +90,7 @@ export default function LoginModal(props) {
 
 	const goRegister = () => {
 		props.onHide();
-		props.toRegister();
+		props.gotoRegister();
 	};
 
 	return (
@@ -82,6 +102,8 @@ export default function LoginModal(props) {
 		>
 			<Modal.Body className='m-3'>
 				<h1 className='text-center mt-3 mb-5 fw-bold'>Sign in</h1>
+
+				{message && message}
 
 				<Form onSubmit={(e) => handleSubmit.mutate(e)}>
 					<Form.Group className='mb-3'>

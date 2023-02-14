@@ -164,7 +164,7 @@ export default function Profile() {
 										
 										onClick={() => setImageModal(true)}
 									>
-										Change Photo Profil
+										Change Photo Profile
 									</Button>
 								
 								
