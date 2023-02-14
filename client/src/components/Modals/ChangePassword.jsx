@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Button, Modal, Form } from "react-bootstrap";
-import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 import { useMutation } from "react-query";
 import { API } from "lib/api";
-import { useNavigate } from "react-router-dom";
+import Toast from "lib/sweetAlerts";
 // import RegisterModal from "../Register";
 
 import css from "./ChangePassword.module.css";
@@ -19,30 +19,12 @@ const ChangePasswordModal = (props) => {
 
 	const { old_password, confirm_new_password } = form;
 
-	// const showHide = (e) => {
-	// 	e.preventDefault();
-	// 	e.stopPropagation();
-	// 	setType(type === "input" ? "password" : "input");
-	// };
-
 	const handleChange = (e) => {
 		setForm({
 			...form,
 			[e.target.name]: e.target.value,
 		});
 	};
-
-	const Toast = Swal.mixin({
-		toast: true,
-		position: "top-end",
-		showConfirmButton: false,
-		timer: 2000,
-		timerProgressBar: true,
-		didOpen: (toast) => {
-			toast.addEventListener("mouseenter", Swal.stopTimer);
-			toast.addEventListener("mouseleave", Swal.resumeTimer);
-		},
-	});
 
 	const handleSubmit = useMutation(async (e) => {
 		try {
@@ -73,8 +55,7 @@ const ChangePasswordModal = (props) => {
 				});
 			}
 		} catch (error) {
-			
-			console.log(error);
+			// console.log(error);
 
 			Toast.fire({
 				icon: "error",
@@ -82,45 +63,6 @@ const ChangePasswordModal = (props) => {
 			});
 		}
 	});
-
-	// const [isLogin, setIsLogin] = useState({});
-
-	// const isLogin = JSON.parse(localStorage.getItem("isLogin"));
-	// // get index data
-	// const userIndex = JSON.parse(localStorage.getItem("userData")).findIndex(
-	// 	(obj) => obj.username === isLogin.username
-	// );
-	// // get whole data on userData
-	// const user = JSON.parse(localStorage.getItem("userData")).find(
-	// 	(obj) => obj.username === isLogin.username
-	// );
-	// const userData = JSON.parse(localStorage.getItem("userData"));
-
-	// const changePassword = (e) => {
-	// 	e.preventDefault();
-
-	// 	const checkPass = {
-	// 		old: e.target.oldpassword.value,
-	// 		new: e.target.password1.value,
-	// 		confirm: e.target.password2.value,
-	// 	};
-	// 	if (!checkPass.new) {
-	// 		alert("Form New Password is required!");
-	// 	}
-	// 	if (!checkPass.confirm) {
-	// 		alert("Form Confirm Password is required!");
-	// 	}
-	// 	if (checkPass.new !== checkPass.confirm) {
-	// 		alert("Password tidak sama");
-	// 	}
-	// 	if (checkPass.new === checkPass.confirm) {
-	// 		const updatedUser = { ...userData[userIndex], password: checkPass.new };
-	// 		userData.splice(userIndex, 1, updatedUser);
-	// 		localStorage.setItem("userData", JSON.stringify(userData));
-	// 		alert("password telah diubah");
-	// 		props.onHide();
-	// 	}
-	// };
 
 	return (
 		<Modal

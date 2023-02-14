@@ -37,10 +37,7 @@ export default function Home() {
 								{/* <Card Rooms={filterData(properties)} className={"RoomLink"} /> */}
 
 								{properties === undefined || properties.length === 0 ? (
-									<div
-										className='d-flex align-items-center justify-content-center'
-										style={{ minHeight: "90vh" }}
-									>
+									<div className='mx-auto my-auto'>
 										<div className='text-center bg-white rounded-4 p-5 shadow'>
 											<h2>Property Tidak Ditemukan</h2>
 										</div>
