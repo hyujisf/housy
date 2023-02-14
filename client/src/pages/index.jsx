@@ -35,11 +35,23 @@ export default function Home() {
 						<div className='p-lg-4'>
 							<div className={css.RoomsDisplay}>
 								{/* <Card Rooms={filterData(properties)} className={"RoomLink"} /> */}
-								<Card
-									Rooms={properties}
-									className={css.RoomLink}
-									searchCity={true}
-								/>
+
+								{properties === undefined || properties.length === 0 ? (
+									<div
+										className='d-flex align-items-center justify-content-center'
+										style={{ minHeight: "90vh" }}
+									>
+										<div className='text-center bg-white rounded-4 p-5 shadow'>
+											<h2>Property Tidak Ditemukan</h2>
+										</div>
+									</div>
+								) : (
+									<Card
+										Rooms={properties}
+										className={css.RoomLink}
+										searchCity={true}
+									/>
+								)}
 							</div>
 						</div>
 					</section>

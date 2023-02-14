@@ -36,65 +36,47 @@ export default function CardProperties(props) {
 	console.log("data showed", properties);
 	return (
 		<>
-			{properties === undefined || properties.length === 0 ? (
-				<div
-					className='d-flex align-items-center justify-content-center'
-					style={{ minHeight: "90vh" }}
-				>
-					<div className='text-center bg-white rounded-4 p-5 shadow'>
-						<h2>Property Tidak Ditemukan</h2>
-						{/* <p>Silahkan lakukan checkin terlebih dahulu</p>
-					<Link to='/' className='btn btn-primary px-4 py-2 mt-2'>
-						Kembali
-					</Link> */}
-					</div>
-				</div>
-			) : (
-				<>
-					{properties?.map((room, k) => {
-						return (
-							<Link
-								to={"/detail/" + room.id}
-								key={k}
-								className='w-100'
-								style={{ textDecoration: "none" }}
-							>
-								<Card className={props.className}>
-									<div className='position-absolute mt-3 ms-3 d-flex gap-2'>
-										{room.amenities.map((amenity, k) => (
-											<span key={k} className={css.Tag}>
-												{amenity}
-											</span>
-										))}
-									</div>
-									<div className={css.WrapperPrimaryImage}>
-										<Image
-											variant='top'
-											className={css.PrimaryImage}
-											src={room.image}
-										/>
-									</div>
-									<Card.Body>
-										<Card.Title>
-											<strong>
-												{toCurrency(room.price)} / {room.type_rent}
-											</strong>
-										</Card.Title>
-										<Card.Subtitle className='mb-2'>
-											{room.bedroom} Beds, {room.bathroom} Bath, {room.size}{" "}
-											Sqft
-										</Card.Subtitle>
-										<Card.Text>
-											{room.district}, {room.city.name}
-										</Card.Text>
-										{/* <Button variant="primary">Go somewhere</Button> */}
-									</Card.Body>
-								</Card>
-							</Link>
-						);
-					})}
-				</>
-			)}
+			{properties?.map((room, k) => {
+				return (
+					<Link
+						to={"/detail/" + room.id}
+						key={k}
+						className='w-100'
+						style={{ textDecoration: "none" }}
+					>
+						<Card className={props.className}>
+							<div className='position-absolute mt-3 ms-3 d-flex gap-2'>
+								{room.amenities.map((amenity, k) => (
+									<span key={k} className={css.Tag}>
+										{amenity}
+									</span>
+								))}
+							</div>
+							<div className={css.WrapperPrimaryImage}>
+								<Image
+									variant='top'
+									className={css.PrimaryImage}
+									src={room.image}
+								/>
+							</div>
+							<Card.Body>
+								<Card.Title>
+									<strong>
+										{toCurrency(room.price)} / {room.type_rent}
+									</strong>
+								</Card.Title>
+								<Card.Subtitle className='mb-2'>
+									{room.bedroom} Beds, {room.bathroom} Bath, {room.size} Sqft
+								</Card.Subtitle>
+								<Card.Text>
+									{room.district}, {room.city.name}
+								</Card.Text>
+								{/* <Button variant="primary">Go somewhere</Button> */}
+							</Card.Body>
+						</Card>
+					</Link>
+				);
+			})}
 		</>
 	);
 }
