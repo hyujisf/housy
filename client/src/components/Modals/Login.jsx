@@ -5,7 +5,7 @@ import { useMutation } from "react-query";
 import { API } from "lib/api";
 import { Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
+import Toast from "lib/sweetAlerts";
 // import { redirect } from "react-router-dom";
 // import RegisterModal from "../Register";
 
@@ -18,18 +18,6 @@ export default function LoginModal(props) {
 	const [form, setForm] = useState({
 		username: "",
 		password: "",
-	});
-
-	const Toast = Swal.mixin({
-		toast: true,
-		position: "top-end",
-		showConfirmButton: false,
-		timer: 2000,
-		timerProgressBar: true,
-		didOpen: (toast) => {
-			toast.addEventListener("mouseenter", Swal.stopTimer);
-			toast.addEventListener("mouseleave", Swal.resumeTimer);
-		},
 	});
 
 	const { username, password } = form;

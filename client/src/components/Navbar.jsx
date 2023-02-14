@@ -8,7 +8,7 @@ import { FaRegUser, FaRegCalendar } from "react-icons/fa";
 import { TbHistory } from "react-icons/tb";
 import { IoLogOut } from "react-icons/io5";
 import { MdHomeWork } from "react-icons/md";
-import Swal from "sweetalert2";
+import Toast from "lib/sweetAlerts";
 
 import { Image } from "react-bootstrap";
 
@@ -51,18 +51,6 @@ export default function Header(props) {
 			[e.target.name]: e.target.value,
 		});
 	};
-
-	const Toast = Swal.mixin({
-		toast: true,
-		position: "top-end",
-		showConfirmButton: false,
-		timer: 2000,
-		timerProgressBar: true,
-		didOpen: (toast) => {
-			toast.addEventListener("mouseenter", Swal.stopTimer);
-			toast.addEventListener("mouseleave", Swal.resumeTimer);
-		},
-	});
 
 	console.log("state", state);
 	const handleSubmit = useMutation(async (e) => {

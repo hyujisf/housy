@@ -1,4 +1,10 @@
 import React, { useState, useContext } from "react";
+import { HiCalendar } from "react-icons/hi2";
+import { duration, bed, bath, amenities } from "data/Filter";
+import { useMutation } from "react-query";
+import { API } from "lib/api";
+import Toast from "lib/sweetAlerts";
+import { AppContext } from "context/AppContext";
 import {
 	ToggleButton,
 	Button,
@@ -9,12 +15,6 @@ import {
 	Row,
 	Col,
 } from "react-bootstrap";
-import { HiCalendar } from "react-icons/hi2";
-import { duration, bed, bath, amenities } from "data/Filter";
-import { useMutation } from "react-query";
-import { API } from "lib/api";
-import Swal from "sweetalert2";
-import { AppContext } from "context/AppContext";
 
 export default function Sidebar(props) {
 	// const [checked, setChecked] = useState(false);
@@ -27,17 +27,7 @@ export default function Sidebar(props) {
 
 	const [state, dispatch] = useContext(AppContext);
 
-	// const startFind = () => {
-	// 	props.SearchRoom({
-	// 		duration: durationVal,
-	// 		date: dateVal,
-	// 		bedroom: bedVal,
-	// 		bathroom: bathVal,
-	// 		amenities: amenitiesVal,
-	// 		budget: budgetVal,
-	// 	});
-	// };
-		console.log(durationVal,dateVal, bedVal, bathVal, amenitiesVal, budgetVal);
+	console.log(durationVal, dateVal, bedVal, bathVal, amenitiesVal, budgetVal);
 
 	const Toast = Swal.mixin({
 		toast: true,
@@ -52,44 +42,56 @@ export default function Sidebar(props) {
 	});
 
 	const handleSubmit = useMutation(async (e) => {
-			try {
-				e.preventDefault();
+		try {
+			e.preventDefault();
 
-				// Configuration
-				const config = {
-					headers: {
-						"Content-type": "application/json",
-					},
-				};
+			// Configuration
+			const config = {
+				headers: {
+					"Content-type": "application/json",
+				},
+			};
 
-				// Data body
-				// const body = JSON.stringify(form);
+			// Data body
+			// const body = JSON.stringify(form);
 
-				// Insert data for login process
-				const response = await API.get("/multiFilter?typeRent=" + durationVal + "&price=" + budgetVal + "&bedroom=" + bedVal + "&bathroom=" + bathVal +'&amenities=["' +
-				amenitiesVal.join('","') +
-				'"]' + "&date=" + dateVal, config);
+			// Insert data for login process
+			const response = await API.get(
+				"/multiFilter?typeRent=" +
+					durationVal +
+					"&price=" +
+					budgetVal +
+					"&bedroom=" +
+					bedVal +
+					"&bathroom=" +
+					bathVal +
+					'&amenities=["' +
+					amenitiesVal.join('","') +
+					'"]' +
+					"&date=" +
+					dateVal,
+				config
+			);
 
-				// Checking process
-				if (response.data.data != null) {
-					// Send data to useContext
-					dispatch({
-						type: "FILTER",
-						status: state.isLogin,
-						isUser: state.user,
-						payload: response.data.data,
-					});
-					console.log("filter", response.data.data)
-				}
-			} catch (error) {
-				Toast.fire({
-					icon: "error",
-					title: "Property not found",
+			// Checking process
+			if (response.data.data != null) {
+				// Send data to useContext
+				dispatch({
+					type: "FILTER",
+					status: state.isLogin,
+					isUser: state.user,
+					payload: response.data.data,
 				});
-				console.log(error);
+				console.log("filter", response.data.data);
 			}
+		} catch (error) {
+			Toast.fire({
+				icon: "error",
+				title: "Property not found",
+			});
+			console.log(error);
+		}
 	});
-		
 
 	return (
 		<>
@@ -219,15 +221,15 @@ export default function Sidebar(props) {
 											onChange={(e) => {
 												if (e.target.checked) {
 													setAmenities((prevState) => [
-													...prevState,
-													e.target.value,
-												]);
+														...prevState,
+														e.target.value,
+													]);
 												} else {
 													setAmenities((prevState) =>
-													prevState.filter((a) => a !== e.target.value)
-												);
+														prevState.filter((a) => a !== e.target.value)
+													);
 												}
-												}}
+											}}
 										/>
 									</div>
 								))}
@@ -264,7 +266,7 @@ export default function Sidebar(props) {
 								size='lg'
 								type='button'
 								className='px-4'
-								onClick={(e) => handleSubmit.mutate(e)} 
+								onClick={(e) => handleSubmit.mutate(e)}
 							>
 								Apply
 							</Button>

@@ -24,14 +24,6 @@ export default function MyBooking() {
 
 	console.log("booking", transaction);
 
-	// // Fetching product data from database
-	// let { data: midtrans} = useQuery("getMidtransCache", async () => {
-	// 	const response = await API.get("/transaction/");
-	// 	return response.data.data;
-	// });
-
-	// console.log("midtrans", midtrans)
-
 	useEffect(() => {
 		//change this to the script source you want to load, for example this is snap.js sandbox env
 		const midtransScriptUrl = "https://app.sandbox.midtrans.com/snap/snap.js";

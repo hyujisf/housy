@@ -2,13 +2,11 @@ import React, { useState } from "react";
 import { Alert, Button, Modal, Form } from "react-bootstrap";
 import { useMutation } from "react-query";
 import { API } from "lib/api";
-import Swal from "sweetalert2";
+import Toast from "lib/sweetAlerts";
 
 import css from "./Register.module.css";
 
 const RegisterModal = (props) => {
-
-
 	const [message, setMessage] = useState(null);
 	const [form, setForm] = useState({
 		fullname: "",
@@ -31,18 +29,6 @@ const RegisterModal = (props) => {
 		phone,
 		address,
 	} = form;
-
-	const Toast = Swal.mixin({
-		toast: true,
-		position: "top-end",
-		showConfirmButton: false,
-		timer: 2000,
-		timerProgressBar: true,
-		didOpen: (toast) => {
-			toast.addEventListener("mouseenter", Swal.stopTimer);
-			toast.addEventListener("mouseleave", Swal.resumeTimer);
-		},
-	});
 
 	const handleChange = (e) => {
 		setForm({

@@ -24,59 +24,13 @@ import ImageModal from "components/Modals/ChangeImage";
 export default function Profile() {
 	const [state, dispatch] = useContext(AppContext);
 	const [PasswordModal, setPasswordModal] = useState(false);
-	const [imageModal, setImageModal] = useState(false)
+	const [imageModal, setImageModal] = useState(false);
 	const queryClient = useQueryClient();
-
 
 	let { data: user } = useQuery("ProfileCache", async () => {
 		const response = await API.get("/user/" + state.user.id);
 		return response.data.data;
 	});
-
-	// const Toast = Swal.mixin({
-	// 	toast: true,
-	// 	position: "top-end",
-	// 	showConfirmButton: false,
-	// 	timer: 3000,
-	// 	timerProgressBar: true,
-	// 	didOpen: (toast) => {
-	// 		toast.addEventListener("mouseenter", Swal.stopTimer);
-	// 		toast.addEventListener("mouseleave", Swal.resumeTimer);
-	// 	},
-	// });
-
-	// const handleSubmit = useMutation(async (e) => {
-	// 	e.preventDefault();
-	// 	const formData = new FormData();
-	// 	formData.append("image", imageFile);
-	// 	try {
-	// 	  const response = await API.patch("/user/changeImage/" + state.user.id, formData);
-	// 	  Toast.fire({
-	// 		icon: "success",
-	// 		title: "Profile picture updated successfully",
-	// 	  });
-	// 	  await queryClient.invalidateQueries("ProfileCache");
-	// 	} catch (error) {
-	// 	  console.error(error);
-	// 	  Toast.fire({
-	// 		icon: "error",
-	// 		title: "Failed to update profile picture",
-	// 	  });
-	// 	}
-	// });
-	  
-
-
-
-	// const handleChange = (e) => {
-	// 	setImageFile(e.target.files[0]);
-	// 	// Create image url for preview
-	// 	// if (e.target.type === "file") {
-	// 	// 	let url = URL.createObjectURL(e.target.files[0]);
-			
-	// 	// }
-	// };
-	  
 
 	console.log("data showed", user);
 
@@ -152,22 +106,16 @@ export default function Profile() {
 							</div>
 							<div className={css.CardRight}>
 								<div className={css.WrapperCardImage}>
-									<Image
-										className={css.CardImage}
-										src={user?.image}
-									/>
+									<Image className={css.CardImage} src={user?.image} />
 									{/* <Link to='/'>back to home</Link> */}
 								</div>
-							
-									<Button 
-										className={"btn btn-primary w-100 py-3 fw-bold fs-5"} 
-										
-										onClick={() => setImageModal(true)}
-									>
-										Change Photo Profile
-									</Button>
-								
-								
+
+								<Button
+									className={"btn btn-primary w-100 py-3 fw-bold fs-5"}
+									onClick={() => setImageModal(true)}
+								>
+									Change Photo Profile
+								</Button>
 							</div>
 						</div>
 					</div>
@@ -179,9 +127,7 @@ export default function Profile() {
 				// gotoregister={gotoRegistration}
 				onHide={() => setPasswordModal(false)}
 			/>
-			<ImageModal 
-				show={imageModal} onHide={() => setImageModal(false)} 
-			/>
+			<ImageModal show={imageModal} onHide={() => setImageModal(false)} />
 		</Layout>
 	);
 }

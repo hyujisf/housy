@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Layout from "layouts/withoutSearchbar";
 import { Form, Col, Button } from "react-bootstrap";
-import Swal from "sweetalert2";
+import Toast from "lib/sweetAlerts";
 
 import { useMutation } from "react-query";
 import { API } from "lib/api";
@@ -33,19 +33,6 @@ export default function AddProperty() {
 	let { data: cities } = useQuery("getCitiesCache", async () => {
 		const response = await API.get("/cities");
 		return response.data.data;
-	});
-
-
-	const Toast = Swal.mixin({
-		toast: true,
-		position: "top-end",
-		showConfirmButton: false,
-		timer: 3000,
-		timerProgressBar: true,
-		didOpen: (toast) => {
-			toast.addEventListener("mouseenter", Swal.stopTimer);
-			toast.addEventListener("mouseleave", Swal.resumeTimer);
-		},
 	});
 
 	// For handle if category selected
@@ -105,7 +92,7 @@ export default function AddProperty() {
 			const response = await API.post("/property", formData, config);
 
 			console.log("Property success to add", response);
-			
+
 			setForm({
 				name: "",
 				city_id: "",
@@ -125,7 +112,6 @@ export default function AddProperty() {
 				title: "Property baru telah berhasil ditambahkan",
 			});
 			redirect("/");
-			
 		} catch (err) {
 			console.log("Fail to add Property", err);
 			// console.log(form.amenities);
