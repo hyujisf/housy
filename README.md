@@ -6,7 +6,8 @@ Aku menyelesaikan project Dumbways
 
 
 ## API
-{
+
+```env
   "SERVER_NAME": "",
   "DOMAIN": "https://api.housy.up.railway.app",
   "DEV_STATUS": "production",
@@ -27,4 +28,4 @@ Aku menyelesaikan project Dumbways
   "CLOUD_NAME": "hyujisf",
   "API_KEY": "837721324271958",
   "API_SECRET": "CVTu8MApSg4eAcGQSNQi5Pqd3Xo"
-}
+```
