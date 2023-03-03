@@ -4,25 +4,32 @@
 
 Aku menyelesaikan project Dumbways
 
+## CLIENT
+
+REACT_APP_STATUS=development
+
+REACT_APP_DEV_API= Local URL
+REACT_APP_PROD_API= Deployment URL
+
+REACT_APP_MIDTRANS_CLIENT_KEY=
+
 ## API
 
 ```env
-  "DEV_STATUS": "production",
-  "SERVER_PORT": "5000",
-  "API_VERSION": "v1",
-  "DB_TYPE": "postgres",
-  "DB_HOST": "containers-us-west-180.railway.app",
-  "DB_NAME": "railway",
-  "DB_PASSWORD": "3XJPl6IPevsrE4kPsTBG",
-  "DB_PORT": "7586",
-  "DB_USER": "postgres",
-  "SECRET_KEY": "Housy_SuperSecretKey",
-  "SERVER_KEY": "SB-Mid-server-uCFZFgoRBXCGaS2PTF8eubme",
-  "CLIENT_KEY": "SB-Mid-client-Xri2fRjAlqqG8kqp",
-  "SYSTEM_EMAIL": "nengtesla26@gmail.com",
-  "SYSTEM_PASSWORD": "yasxyqctmkhvsljx",
-  "PORT": "5000",
-  "CLOUD_NAME": "hyujisf",
-  "API_KEY": "837721324271958",
-  "API_SECRET": "CVTu8MApSg4eAcGQSNQi5Pqd3Xo"
+  DEV_STATUS: production,
+  SERVER_PORT: ,
+  API_VERSION: v1,
+  DB_TYPE:,
+  DB_HOST: ,
+  DB_NAME: ,
+  DB_PASSWORD: ,
+  DB_PORT: ,
+  DB_USER: ,
+  SECRET_KEY: ,
+  SERVER_KEY: ,
+  SYSTEM_EMAIL: ,
+  SYSTEM_PASSWORD: ,
+  CLOUD_NAME: ,
+  API_KEY: ,
+  API_SECRET:
 ```
