@@ -6,12 +6,14 @@ Aku menyelesaikan project Dumbways
 
 ## CLIENT
 
-REACT_APP_STATUS=development
+```env
+  REACT_APP_STATUS=development
 
-REACT_APP_DEV_API= Local URL
-REACT_APP_PROD_API= Deployment URL
+  REACT_APP_DEV_API= Local URL
+  REACT_APP_PROD_API= Deployment URL
 
-REACT_APP_MIDTRANS_CLIENT_KEY=
+  REACT_APP_MIDTRANS_CLIENT_KEY=
+```
 
 ## API
 
