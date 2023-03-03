@@ -4,12 +4,9 @@
 
 Aku menyelesaikan project Dumbways
 
-
 ## API
 
 ```env
-  "SERVER_NAME": "",
-  "DOMAIN": "https://api.housy.up.railway.app",
   "DEV_STATUS": "production",
   "SERVER_PORT": "5000",
   "API_VERSION": "v1",
