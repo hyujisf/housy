@@ -17,8 +17,6 @@ import {
 import { TbGenderBigender } from "react-icons/tb";
 import PassModal from "components/Modals/ChangePassword";
 import Layout from "layouts/withoutSearchbar";
-import { Form } from "react-router-dom";
-import Swal from "sweetalert2";
 import ImageModal from "components/Modals/ChangeImage";
 
 export default function Profile() {
