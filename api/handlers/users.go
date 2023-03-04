@@ -1,16 +1,21 @@
 package handlers
 
 import (
-	"encoding/json"	
+	"context"
+	"encoding/json"
+	"fmt"
 	dto "housy/dto/result"
 	usersdto "housy/dto/users"
 	"housy/models"
 	"housy/pkg/bcrypt"
 	"housy/repositories"
 	"net/http"
+	"os"
 	"strconv"
 
-	"github.com/go-playground/validator/v10"
+	// "github.com/go-playground/validator/v10"
+	"github.com/cloudinary/cloudinary-go"
+	"github.com/cloudinary/cloudinary-go/api/uploader"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/gorilla/mux"
 )
@@ -124,28 +129,25 @@ func (h *handlerUser) ChangeImage(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
+		fmt.Println("satu")
 		json.NewEncoder(w).Encode(response)
 		return
 	}
 
-	dataContex := r.Context().Value("dataFile") 
-	filename := dataContex.(string)  
+	dataContext := r.Context().Value("dataFile")
+	filepath := dataContext.(string)
 
-	request := new(usersdto.ChangePhotoRequest)
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
-		json.NewEncoder(w).Encode(response)
-		return
-	}
+	var ctx = context.Background()
+	var CLOUD_NAME = os.Getenv("CLOUD_NAME")
+	var API_KEY = os.Getenv("API_KEY")
+	var API_SECRET = os.Getenv("API_SECRET")
 
-	validation := validator.New()
-	err = validation.Struct(request)
+	cld, _ := cloudinary.NewFromParams(CLOUD_NAME, API_KEY, API_SECRET)
+
+	resp, err  := cld.Upload.Upload(ctx, filepath, uploader.UploadParams{Folder: "photo_user"})
+
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()}
-		json.NewEncoder(w).Encode(response)
-		return
+		fmt.Println(err.Error())
 	}
 	
 	addData := models.User{
@@ -158,7 +160,7 @@ func (h *handlerUser) ChangeImage(w http.ResponseWriter, r *http.Request) {
 		Gender: user.Gender,
 		Phone: user.Phone,
 		Address: user.Address,
-		Image: filename,
+		Image: resp.SecureURL,
 	}
 
 

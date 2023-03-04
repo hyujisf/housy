@@ -47,7 +47,7 @@ func (r *repository) MultiParameter(params url.Values) ([]models.Property, error
 	// date, _ := time.Parse("2006-01-02",params.Get("date"))
 	date := params.Get("date")
 	
-	err := r.db.Where("type_rent = ? AND price < ? AND bedroom = ? AND bathroom = ? AND amenities = ? AND created_at LIKE ?", typeRent, price, bedroom, bathroom, amenities, "%"+date+"%").Preload("City").Find(&properties).Error
+	err := r.db.Where("type_rent = ? AND price < ? AND bedroom = ? AND bathroom = ? AND amenities = ? AND created_at::date = ?", typeRent, price, bedroom, bathroom, amenities, date).Preload("City").Find(&properties).Error
 
 	return properties, err
 }

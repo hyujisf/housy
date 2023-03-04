@@ -27,7 +27,7 @@ import (
 // Declare Coreapi Client ...
 var c = coreapi.Client{
 	ServerKey: os.Getenv("SERVER_KEY"),
-	ClientKey: os.Getenv("CLIENT_KEY"),
+	ClientKey:  os.Getenv("CLIENT_KEY"),
 }
 
 type handleTransaction struct {
@@ -81,11 +81,12 @@ func (h *handleTransaction) AddTransaction(w http.ResponseWriter, r *http.Reques
 		}
 	}
 
+
 	checkin, _ := time.Parse("2006-01-02", request.Checkin)
 	checkout, _ := time.Parse("2006-01-02", request.Checkout)
 
 	transaction := models.Transaction{
-		ID:         TransactionId,
+		ID: TransactionId,
 		PropertyID: request.PropertyID,
 		Checkin:    checkin,
 		Checkout:   checkout,
@@ -185,6 +186,8 @@ func (h *handleTransaction) CreateMidtrans(w http.ResponseWriter, r *http.Reques
 
 	// fmt.Println(transaction)
 
+	
+
 	// dataTransactions, err := h.TransactionRepository.GetTransaction(data.ID)
 	// if err != nil {
 	// 	w.WriteHeader(http.StatusInternalServerError)
@@ -197,19 +200,19 @@ func (h *handleTransaction) CreateMidtrans(w http.ResponseWriter, r *http.Reques
 	var s = snap.Client{}
 	s.New(os.Getenv("SERVER_KEY"), midtrans.Sandbox)
 	// Use to midtrans.Production if you want Production Environment (accept real transaction).
-
+	
 	// 2. Initiate Snap request param
 	req := &snap.Request{
 		TransactionDetails: midtrans.TransactionDetails{
-			OrderID:  strconv.Itoa(dataTransactions.ID),
-			GrossAmt: int64(dataTransactions.Total),
-		},
+		  OrderID:  strconv.Itoa(dataTransactions.ID),
+		  GrossAmt: int64(dataTransactions.Total),
+		}, 
 		CreditCard: &snap.CreditCardDetails{
-			Secure: true,
+		  Secure: true,
 		},
 		CustomerDetail: &midtrans.CustomerDetails{
-			FName: dataTransactions.User.Fullname,
-			Email: dataTransactions.User.Email,
+		  FName: dataTransactions.User.Fullname,
+		  Email: dataTransactions.User.Email,
 		},
 	}
 
@@ -245,30 +248,32 @@ func (h *handleTransaction) Notification(w http.ResponseWriter, r *http.Request)
 		if fraudStatus == "challenge" {
 			// TODO set transaction status on your database to 'challenge'
 			// e.g: 'Payment status challenged. Please take action on your Merchant Administration Portal
-			h.TransactionRepository.UpdateTransaction("pending", orderId)
+			h.TransactionRepository.UpdateTransaction("pending",  orderId)
 		} else if fraudStatus == "accept" {
 			// TODO set transaction status on your database to 'success'
-			h.TransactionRepository.UpdateTransaction("success", orderId)
+			h.TransactionRepository.UpdateTransaction("success",  orderId)	
 			SendMail("success", transaction)
-
+				
 		}
 	} else if transactionStatus == "settlement" {
 		// TODO set transaction status on your databaase to 'success'
-		h.TransactionRepository.UpdateTransaction("success", orderId)
+		h.TransactionRepository.UpdateTransaction("success",  orderId)
 		SendMail("success", transaction)
-
+		
 	} else if transactionStatus == "deny" {
 		// TODO you can ignore 'deny', because most of the time it allows payment retries
 		// and later can become success
-		SendMail("failed", transaction)
-		h.TransactionRepository.UpdateTransaction("failed", orderId)
+		
+		h.TransactionRepository.UpdateTransaction("failed",  orderId)
+		SendMail("failed", transaction) 
 	} else if transactionStatus == "cancel" || transactionStatus == "expire" {
 		// TODO set transaction status on your databaase to 'failure'
+		
+		h.TransactionRepository.UpdateTransaction("failed",  orderId)
 		SendMail("failed", transaction)
-		h.TransactionRepository.UpdateTransaction("failed", orderId)
 	} else if transactionStatus == "pending" {
 		// TODO set transaction status on your databaase to 'pending' / waiting payment
-		h.TransactionRepository.UpdateTransaction("pending", orderId)
+		h.TransactionRepository.UpdateTransaction("pending",  orderId)
 	}
 
 	w.WriteHeader(http.StatusOK)
@@ -280,6 +285,7 @@ func (h *handleTransaction) FindTransaction(w http.ResponseWriter, r *http.Reque
 	userInfo := r.Context().Value("userInfo").(jwt.MapClaims)
 	userListAs := int(userInfo["list_as_id"].(float64))
 	userId := int(userInfo["id"].(float64))
+
 
 	if userListAs != 1 {
 		w.WriteHeader(http.StatusUnauthorized)
@@ -402,6 +408,8 @@ func (h *handleTransaction) HistoryOwner(w http.ResponseWriter, r *http.Request)
 	// 	return
 	// }
 
+
+
 	transaction, err := h.TransactionRepository.HistoryOwner(userID)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -421,22 +429,22 @@ func (h *handleTransaction) HistoryOwner(w http.ResponseWriter, r *http.Request)
 func SendMail(status string, transaction models.Transaction) {
 
 	if status != transaction.Status && (status == "success") {
-		var CONFIG_SMTP_HOST = "smtp.gmail.com"
-		var CONFIG_SMTP_PORT = 587
-		var CONFIG_SENDER_NAME = "Housy <" + os.Getenv("SYSTEM_EMAIL") + ">"
-		var CONFIG_AUTH_EMAIL = os.Getenv("SYSTEM_EMAIL")
-		var CONFIG_AUTH_PASSWORD = os.Getenv("SYSTEM_PASSWORD")
+	  var CONFIG_SMTP_HOST = "smtp.gmail.com"
+	  var CONFIG_SMTP_PORT = 587
+	  var CONFIG_SENDER_NAME = "Sally <nengtesla26@gmail.com>"
+	  var CONFIG_AUTH_EMAIL = os.Getenv("SYSTEM_EMAIL")
+	  var CONFIG_AUTH_PASSWORD = os.Getenv("SYSTEM_PASSWORD")
+  
+	  var propertytName = transaction.Property.Name
+	  var price = strconv.Itoa(int(transaction.Total))
 
-		var propertytName = transaction.Property.Name
-		var price = strconv.Itoa(int(transaction.Total))
-
-		fmt.Println(transaction.User.Email)
-
-		mailer := gomail.NewMessage()
-		mailer.SetHeader("From", CONFIG_SENDER_NAME)
-		mailer.SetHeader("To", transaction.User.Email)
-		mailer.SetHeader("Subject", "Transaction Status")
-		mailer.SetBody("text/html", fmt.Sprintf(`<!DOCTYPE html>
+	  fmt.Println(transaction.User.Email)
+  
+	  mailer := gomail.NewMessage()
+	  mailer.SetHeader("From", CONFIG_SENDER_NAME)
+	  mailer.SetHeader("To", transaction.User.Email)
+	  mailer.SetHeader("Subject", "Transaction Status")
+	  mailer.SetBody("text/html", fmt.Sprintf(`<!DOCTYPE html>
 	  <html lang="en">
 		<head>
 		<meta charset="UTF-8" />
@@ -458,19 +466,19 @@ func SendMail(status string, transaction models.Transaction) {
 		</ul>
 		</body>
 	  </html>`, propertytName, price, status))
-
-		dialer := gomail.NewDialer(
-			CONFIG_SMTP_HOST,
-			CONFIG_SMTP_PORT,
-			CONFIG_AUTH_EMAIL,
-			CONFIG_AUTH_PASSWORD,
-		)
-
-		err := dialer.DialAndSend(mailer)
-		if err != nil {
-			log.Fatal(err.Error())
-		}
-
-		log.Println("Mail sent! to " + transaction.User.Email)
+  
+	  dialer := gomail.NewDialer(
+		CONFIG_SMTP_HOST,
+		CONFIG_SMTP_PORT,
+		CONFIG_AUTH_EMAIL,
+		CONFIG_AUTH_PASSWORD,
+	  )
+  
+	  err := dialer.DialAndSend(mailer)
+	  if err != nil {
+		log.Fatal(err.Error())
+	  }
+  
+	  log.Println("Mail sent! to " + transaction.User.Email)
 	}
-}
+  }
