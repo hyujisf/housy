@@ -20,8 +20,8 @@ func DatabaseInit() {
 	// DB_TYPE := os.Getenv("DB_TYPE")
 	DB_HOST := os.Getenv("DB_HOST")
 	DB_USER := os.Getenv("DB_USER")
-	DB_NAME := os.Getenv("DB_NAME")
 	DB_PASSWORD := os.Getenv("DB_PASSWORD")
+	DB_NAME := os.Getenv("DB_NAME")
 	DB_PORT := os.Getenv("DB_PORT")
 
 	var err error

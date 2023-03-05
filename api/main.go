@@ -23,7 +23,6 @@ func main() {
 	}
 
 	PORT := os.Getenv("SERVER_PORT")
-	VERSION := os.Getenv("API_VERSION")
 
 	// Database
 	mysql.DatabaseInit()
@@ -33,7 +32,7 @@ func main() {
 
 	r := mux.NewRouter()
 
-	routes.RouteInit(r.PathPrefix("/api/" + VERSION).Subrouter())
+	routes.RouteInit(r.PathPrefix("/api/v1").Subrouter())
 
 	// Initialization "uploads" folder to public here ...
 	r.PathPrefix("/uploads").Handler(http.StripPrefix("/uploads/", http.FileServer(http.Dir("./uploads"))))
