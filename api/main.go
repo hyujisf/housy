@@ -43,6 +43,6 @@ func main() {
 	var AllowedOrigins = handlers.AllowedOrigins([]string{"*"})
 
 	// Embed the setup allowed in 2 parameter on this below code ...
-	fmt.Println("Server is running on http://" + ":" + PORT + "/api/" + VERSION)
+	fmt.Println("Server is running on port:" + PORT)
 	http.ListenAndServe(":"+PORT, handlers.CORS(AllowedHeaders, AllowedMethods, AllowedOrigins)(r))
 }
