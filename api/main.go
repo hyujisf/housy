@@ -29,6 +29,7 @@ func main() {
 
 	// Migration
 	database.RunMigration()
+	database.RunSeeder()
 
 	r := mux.NewRouter()
 
